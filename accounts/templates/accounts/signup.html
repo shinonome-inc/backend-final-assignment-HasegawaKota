@@ -1,0 +1,21 @@
+
+
+{% block title %}ユーザー登録{% endblock %}
+
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    <input type="username" name="username"  placeholder="あなたのお名前を教えやがれ">
+    <input type="password" name="password1" placeholder="パスワード">
+    <input type="password" name="password2" placeholder="パスワード再確認">
+    <button type="submit" name="アカウント作成"></button>
+
+    
+
+
+
+  </form>
+{% endblock %}
+    
+
+
