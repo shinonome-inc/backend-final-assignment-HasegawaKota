@@ -6,6 +6,9 @@ from django.db import models
 class User(AbstractUser):
     email=models.EmailField(blank=False,max_length=254)
     yourname=models.CharField(blank=False,null=True,max_length=254)
+   
+   
+   
 
     
 
