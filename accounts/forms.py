@@ -5,5 +5,6 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = get_user_model()#CustomUserモデル、DjangoデフォルトのUserモデルを問わず、使用しているUserモデル自体を返してくれる
-        fields = ('username','password1','password2')
+        fields = ('username','password1','password2','email')
+      
 
