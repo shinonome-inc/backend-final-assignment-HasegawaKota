@@ -28,11 +28,7 @@ class SignUpTests(TestCase):
         
         self.assertRedirects(response_post,reverse('home'),status_code=302,target_status_code=200)  
         
-        self.assertTrue(User.objects.filter(username='sample').exists())
-        self.assertTrue(User.objects.filter(email='example@example.com').exists())
-       
-        
-        
+        self.assertTrue(User.objects.filter(username='sample',email='example@example.com').exists())
 
        
 
