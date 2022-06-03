@@ -1,20 +1,14 @@
-import email
-from importlib.resources import path
-from tkinter.tix import Form
-from django import views
 from django.test import TestCase
 from .models import User
 from django.urls import reverse
-from .forms import SignupForm
-from django.contrib.auth import SESSION_KEY
 
 
-class TestSignUpView(TestCase):
+
+
+class SignUpTests(TestCase):
     def test_success_get(self):
-        #response_getは名前だよ
-        #リクエストを送信する
+     
         response_get=self.client.get(reverse('signup'))
-        #ユーザーが
         self.assertEquals(response_get.status_code,200)
         self.assertFalse(User.objects.exists())
         self.assertTemplateUsed(response_get,'accounts/signup.html')
@@ -30,12 +24,12 @@ class TestSignUpView(TestCase):
             }
         response_post=self.client.post(reverse('signup'),data_post)
         
-        self.assertRedirects(response_post,reverse('home'),status_code=302,target_status_code=200)
-
-
+        self.assertRedirects(response_post,reverse('home'),status_code=302,target_status_code=200)  
+        self.assertTrue(User.objects.exists())
         
-       #form=SignupForm(self.data_post)
-       #self.assertTrue(form)
+        
+
+       
 
     def test_failure_post_with_empty_form(self):
         data_empty_form={
@@ -44,20 +38,18 @@ class TestSignUpView(TestCase):
             'password1':'',
             'password2':'',
         }
-        #self.client.post(テストしたいURL,POST送信するデータ)
-        #self.client.get(テストしたいURL)
-        response_empty_form = self.client.post(reverse('signup'),data_empty_form) #これも名前
+        
+        
+        response_empty_form = self.client.post(reverse('signup'),data_empty_form) 
         self.assertEquals(response_empty_form.status_code,200)
-        #Userオブジェクトが作られていないことを確認
+        
         self.assertFalse(User.objects.exists())
 
-        form=SignupForm(data_empty_form)
         
-        self.assertTrue(form.errors['email'])
-        self.assertTrue(form.errors['username'])
-        self.assertTrue(form.errors['password1'])
-        self.assertTrue(form.errors['password2'])
-        
+        self.assertFormError(response_empty_form,'form','username','このフィールドは必須です。')
+        self.assertFormError(response_empty_form,'form','email','このフィールドは必須です。')
+        self.assertFormError(response_empty_form,'form','password1','このフィールドは必須です。')
+        self.assertFormError(response_empty_form,'form','password2','このフィールドは必須です。')
 
     def test_failure_post_with_empty_username(self):
 
@@ -70,8 +62,9 @@ class TestSignUpView(TestCase):
         response_empty_username=self.client.post(reverse('signup'),data_empty_username)
         self.assertEquals(response_empty_username.status_code,200)
         self.assertFalse(User.objects.exists())
-        form=SignupForm(data_empty_username)
-        self.assertTrue(form.errors['username'])
+        
+        self.assertFormError(response_empty_username,'form','username','このフィールドは必須です。')
+        
 
 
          
@@ -87,8 +80,8 @@ class TestSignUpView(TestCase):
         response_empty_email=self.client.post(reverse('signup'),data_empty_email)
         self.assertEquals(response_empty_email.status_code,200)
         self.assertFalse(User.objects.exists())
-        form=SignupForm(data_empty_email)
-        self.assertTrue(form.errors['email'])
+        
+        self.assertFormError(response_empty_email,'form','email','このフィールドは必須です。')
 
     def test_failure_post_with_empty_password(self):
         #ブランクのあるpaswordが送信された時
@@ -101,8 +94,8 @@ class TestSignUpView(TestCase):
         response_empty_password=self.client.post(reverse('signup'),data_empty_password)
         self.assertEquals(response_empty_password.status_code,200)
         self.assertFalse(User.objects.exists())
-        form=SignupForm(data_empty_password)
-        self.assertTrue(form.errors['password1'])
+        
+        self.assertFormError(response_empty_password,'form','password2','このフィールドは必須です。')
 
 
     def test_failure_post_with_duplicated_user(self):
@@ -120,12 +113,11 @@ class TestSignUpView(TestCase):
              email='example@example.com',
              username='sample',
              password='example12345',
-             #password2='example12345',
+             
              )
         response_duplicated_user=self.client.post(reverse('signup'),data_duplicated_user)
         self.assertEquals(response_duplicated_user.status_code,200)
-        #ユーザーオブジェクトが既に作られていることを確認
-        #self.assertFalse(User.objects.exists())
+        
         
         self.assertFormError(response_duplicated_user,'form','username','同じユーザー名が既に登録済みです。')
 
@@ -141,22 +133,22 @@ class TestSignUpView(TestCase):
         response_invalid_email=self.client.post(reverse('signup'),data_invalid_email)
         self.assertEquals(response_invalid_email.status_code,200)
         self.assertFalse(User.objects.exists())
-        form=SignupForm(data_invalid_email)
-        self.assertTrue(form.errors['email'])
-
+        
+        self.assertFormError(response_invalid_email,'form','email','有効なメールアドレスを入力してください。')
+        
     def test_failure_post_with_too_short_password(self):
         #passwordが短すぎるとき
         data_too_short_password={
              'email':'example@example.com',
              'username':'sample',
-             'password1':'example12345',
-             'password2':'example12345',
+             'password1':'test',
+             'password2':'test',
          }
         response_too_short_password=self.client.post(reverse('signup'),data_too_short_password)
         self.assertEquals(response_too_short_password.status_code,200)
         self.assertFalse(User.objects.exists())
-        form=SignupForm(data_too_short_password)
-        self.assertTrue(form.errors['password2'])#password1からpassword2にしたらエラー治った。なんで？
+        
+        self.assertFormError(response_too_short_password,'form','password2','このパスワードは短すぎます。最低 8 文字以上必要です。')
         
     def test_failure_post_with_password_similar_to_username(self):
         #usernameに似たpasswordでリクエストを送信する
@@ -169,8 +161,8 @@ class TestSignUpView(TestCase):
         response_similar_to_username=self.client.post(reverse('signup'),data_similar_to_username)
         self.assertFalse(User.objects.exists())
         self.assertEquals(response_similar_to_username.status_code,200)
-        form=SignupForm(data_similar_to_username)
-        self.assertTrue(form.errors['password2'])#ここはpassword1じゃなくて２みたい
+        
+        self.assertFormError(response_similar_to_username,'form','password2','このパスワードは ユーザー名 と似すぎています。')
 
 
     def test_failure_post_with_only_numbers_password(self):
@@ -184,9 +176,9 @@ class TestSignUpView(TestCase):
         reponse_only_numbers_password=self.client.post(reverse('signup'),data_only_numbers_password)
         self.assertEquals(reponse_only_numbers_password.status_code,200)
         self.assertFalse(User.objects.exists())
-        form=SignupForm(data_only_numbers_password)
-        self.assertTrue(form.errors['password2'])
-
+        
+        self.assertFormError(reponse_only_numbers_password,'form','password2','このパスワードは一般的すぎます。', 'このパスワードは数字しか使われていません。')
+        
        
     def test_failure_post_with_mismatch_password(self): 
         #パスワード１と２が異なるデータでリクエストを送信する
@@ -196,12 +188,13 @@ class TestSignUpView(TestCase):
              'password1':'example12345',
              'password2':'example123456',
         }
-        #response_mismatch_password名前な
+        
         response_mismatch_password=self.client.post(reverse('signup'),data_mismatch_password)
         self.assertFalse(User.objects.exists())
         self.assertEquals(response_mismatch_password.status_code,200)
-        form=SignupForm(data_mismatch_password)
-        self.assertTrue(form.errors['password2'])
+
+        self.assertFormError(response_mismatch_password,'form','password2','確認用パスワードが一致しません。')
+
 
 class TestHomeView(TestCase):
     def test_success_get(self):
