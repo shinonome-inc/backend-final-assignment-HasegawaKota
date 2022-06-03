@@ -1,3 +1,5 @@
+import email
+from random import sample
 from django.test import TestCase
 from .models import User
 from django.urls import reverse
@@ -25,7 +27,10 @@ class SignUpTests(TestCase):
         response_post=self.client.post(reverse('signup'),data_post)
         
         self.assertRedirects(response_post,reverse('home'),status_code=302,target_status_code=200)  
-        self.assertTrue(User.objects.exists())
+        
+        self.assertTrue(User.objects.filter(username='sample').exists())
+        self.assertTrue(User.objects.filter(email='example@example.com').exists())
+       
         
         
 
