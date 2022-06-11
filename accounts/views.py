@@ -1,10 +1,12 @@
 
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView,CreateView
+from django.views.generic import TemplateView,CreateView,UpdateView,DetailView,ListView
+from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
+from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth import authenticate,login
 
-from accounts.models import User
-from .forms import SignupForm
+from accounts.models import User,Profile
+from .forms import SignupForm,LoginForm,ProfileForm
 
 
 
@@ -16,7 +18,6 @@ class SignupView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        
         username = form.cleaned_data.get('username')
         email = form.cleaned_data.get('email')
         raw_pass = form.cleaned_data.get('password1')
@@ -25,13 +26,32 @@ class SignupView(CreateView):
             login(self.request,user)
             return response
         
+class Login(LoginView):#ログインページ
+    form_class = LoginForm
+    template_name = 'accounts/login.html'
+
+
+class Logout(LoginRequiredMixin,LoginView):#ログアウトページ
+    template_name = 'accounts/logout.html'
+
+class UserProfileView(LoginRequiredMixin,ListView):
+    model = Profile
+    template_name = 'accounts/profile_view.html'
+    
+class UserProfileEditView(LoginRequiredMixin,UpdateView):
+    model= Profile
+    form_class = ProfileForm
+    template_name = 'accounts/profile_edit.html'
+
+    
+
 
     
 
 class HomeView(TemplateView):
     template_name = 'accounts/home.html'
 
-class WelcomeView(TemplateView):
+class WelcomeView(TemplateView):#もともと書いたあったよね
     template_name = 'welcome/index.html'
 
 

@@ -1,0 +1,17 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+
+{% block title %}ログイン{% endblock %}
+
+{% block content %}
+  <form action="" methood="post">
+    {% csrf_token %}
+    {{form.non_field_errors}}
+    {{ form.as_p }}
+    {{field.errors}}
+    
+     {#accounts付けないとエラーになるわ#}
+    <a href="{% url 'accounts:home' %}" class="btn btn-primary">ログインしてホームに行くぞ</a>
+  </form>
+{% endblock content %}
