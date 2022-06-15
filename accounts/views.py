@@ -14,7 +14,7 @@ class SignupView(CreateView):
     model = User
     form_class = SignupForm
     template_name = 'accounts/signup.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('accounts:home')#accounts付けないといけないよ
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -36,12 +36,17 @@ class Logout(LoginRequiredMixin,LoginView):#ログアウトページ
 
 class UserProfileView(LoginRequiredMixin,ListView):
     model = Profile
-    template_name = 'accounts/profile_view.html'
+    template_name = 'accounts/profile.html'
     
-class UserProfileEditView(LoginRequiredMixin,UpdateView):
+class UserProfileEditView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
     model= Profile
     form_class = ProfileForm
     template_name = 'accounts/profile_edit.html'
+
+    def test_func(self):
+        # pkが現在ログイン中ユーザと同じ、またはsuperuserならOK。
+        current_user = self.request.user
+        return current_user.pk == self.kwargs['pk'] or current_user.is_superuser
 
     
 

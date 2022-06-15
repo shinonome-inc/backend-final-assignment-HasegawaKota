@@ -21,8 +21,11 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)#selfあったらエラーになる。
         for field in self.fields.values():
             field.widget.attrs['class']='form-control'
-            field.widget.attrs['placegolder']=field.label
+            field.widget.attrs['placeholder']=field.label
             #attrsがないとエラーになる
+
+    class Meta:
+        fields = ('username', 'password')
 
 
 class ProfileForm(forms.ModelForm):
