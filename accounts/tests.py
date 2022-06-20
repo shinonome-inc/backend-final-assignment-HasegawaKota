@@ -213,19 +213,19 @@ class TestLoginView(TestCase):
 
     def test_success_post(self):
         data_post = {
-            'username':'長谷川滉大',
-            'password':'Hasse118',
+            'username':'hasegawakota',
+            'password':'tarou1108',
         }
         response_post= self.client.post(reverse('accounts:login'),data_post)
-        self.client.login(username='長谷川滉大', password='Hasse118')
+        #self.client.login(username='長谷川滉大', password='Hasse118')
         self.assertRedirects(response_post,reverse('accounts:home'),status_code=302,target_status_code=200)
         self.assertIn(SESSION_KEY,self.client.session)
         
     def test_failure_post_with_not_exists_user(self):
         #存在しないusername,passwordを送信する
         data_not_exists_user={
-            'username':'山田太郎',
-            'password':'tarou1108',
+            'username':'長谷川滉大',
+            'password':'Hasse118',
         }
         response_not_exists_user=self.client.post(reverse('accounts:login'),data_not_exists_user)
         self.assertEquals(response_not_exists_user.status_code,200)
@@ -234,54 +234,49 @@ class TestLoginView(TestCase):
 
     def test_failure_post_with_empty_password(self):
         data_with_empty_password={
-            'username' : '山田太郎',
+            'username' : '長谷川滉大',
             'password' : '',
         }
 
         response_with_empty_password=self.client.post(reverse('accounts:login'),data_with_empty_password)
         self.assertEquals(response_with_empty_password.status_code,200)
         self.assertFormError(response_with_empty_password, 'form', 'password','このフィールドは必須です。')
-        self.assertNotIn(SESSION_KEY,self.client.session)
-        
-
 
 class TestLogoutView(TestCase):
     def test_success_get(self):
-        pass #response_get=self.client.get(reverse('accounts:login'))
-
+        response=self.client.get(reverse('accounts:logout'))
+        self.assertEqual(response.status_code,302)
+        self.assertNotIn(SESSION_KEY,self.client.session)
 
 class TestUserProfileView(TestCase):
     def test_success_get(self):
-        response_get=self.client.get(reverse('accounts:profile'))
+        #response_get=self.client.get(reverse('accounts:user_profile',kwargs={'pk':18}))
+        response_get=self.client.get(reverse('accounts:user_profile',args=[19]))
         self.assertEquals(response_get.status_code,200)
         self.assertTemplateUsed(response_get,'accounts/profile.html')
 
 
 class TestUserProfileEditView(TestCase):
     def test_success_get(self):
-        response_get=self.client.get('accounts:profile_edit',args=[8])
+        response_get=self.client.get(reverse('accounts:user_profile_edit',kwargs={'pk':99}))
         self.assertEquals(response_get.status_code,200)
-        self.assertTemplateUsed(response_get,'accounts/profile_edit.html',args=[8])
+        self.assertTemplateUsed(response_get,'accounts/profile_edit.html')
 
     def test_success_post(self):
         data_post = {
             'hobby':'野球',
             'introduction':'私は宇宙人です。',
         }
-        response_post= self.client.post(reverse('accounts:profile_edit',args=[8]),data_post)
-        self.client.login(username='長谷川滉大', password='Hasse118')
-        self.assertRedirects(response_post,reverse('accounts:profile_edit',args=[8]),status_code=302,target_status_code=200)
-        user_object=Profile.objects.get(pk=8)
+        response_post= self.client.post(reverse('accounts:user_profile_edit',kwargs={'pk':19}),data_post)
+        self.client.login(username='岡田歩', password='yarichinn1225')
+        self.assertRedirects(response_post,reverse('accounts:user_profile_edit',kwargs={'pk':19}),status_code=302,target_status_code=200)
+        user_object=Profile.objects.get(pk=19)
         self.assertEquals(user_object.hobby,data_post['hobby'])
         self.assertEquals(user_object.introduction,data_post['introduction'])
 
     def test_failure_post_with_not_exists_user(self):
-        data={
-            'hobby':'tennis',
-            'introduction':'私は宇宙人です',
-        }
 
-        response=self.client.get(reverse('accounts:profile_edit',kwargs={'pk':99}))
+        response=self.client.get(reverse('accounts:user_profile_edit',kwargs={'pk':19}))
         self.assertAlmostEquals(response.status_code,404)
 
     def test_failure_post_with_incorrect_user(self):
@@ -290,9 +285,9 @@ class TestUserProfileEditView(TestCase):
             'hobby':'tennis',
             'introduction':'私は宇宙人です',
         }
-        response_incorrect_user=self.client.post(reverse('accounts:profile_edit',args=[8]),data_incorrect_user)
+        response_incorrect_user=self.client.post(reverse('accounts:user_profile_edit',kwargs={'pk':99}),data_incorrect_user)
         self.assertEquals(response_incorrect_user.status_code,403)
-        profile_object=Profile.objects.get(pk=8)
+        profile_object=Profile.objects.get(pk=99)
         self.assertFalse(profile_object.hobby,data_incorrect_user['hobby'])
         self.assertFalse(profile_object.introduction,data_incorrect_user['introduction'])
         

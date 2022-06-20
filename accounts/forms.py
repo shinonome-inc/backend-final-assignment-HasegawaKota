@@ -1,3 +1,4 @@
+import profile
 from pyclbr import Class
 from xml.etree.ElementInclude import DEFAULT_MAX_INCLUSION_DEPTH
 from django.contrib.auth.forms import UserCreationForm
@@ -9,6 +10,7 @@ from .models import Profile
 
 #CustomUserモデル、DjangoデフォルトのUserモデルを問わず、使用しているUserモデル自体を返してくれる
 User = get_user_model()
+
 
 class SignupForm(UserCreationForm):
 
@@ -31,7 +33,6 @@ class LoginForm(AuthenticationForm):
 class ProfileForm(forms.ModelForm):
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
-       
 
     class Meta:
         model=Profile
