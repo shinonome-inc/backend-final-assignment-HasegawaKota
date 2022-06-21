@@ -214,17 +214,17 @@ class TestLoginView(TestCase):
     def test_success_post(self):
         data_post = {
             'username':'hasegawakota',
-            'password':'tarou1108',
+            'password':'Hasse118',
         }
         response_post= self.client.post(reverse('accounts:login'),data_post)
-        #self.client.login(username='長谷川滉大', password='Hasse118')
+        self.client.login(username='hasegawakota', password='Hasse118')
         self.assertRedirects(response_post,reverse('accounts:home'),status_code=302,target_status_code=200)
         self.assertIn(SESSION_KEY,self.client.session)
         
     def test_failure_post_with_not_exists_user(self):
         #存在しないusername,passwordを送信する
         data_not_exists_user={
-            'username':'長谷川滉大',
+            'username':'aaaaaaaaaa',
             'password':'Hasse118',
         }
         response_not_exists_user=self.client.post(reverse('accounts:login'),data_not_exists_user)
@@ -252,32 +252,36 @@ class TestUserProfileView(TestCase):
     def test_success_get(self):
         #response_get=self.client.get(reverse('accounts:user_profile',kwargs={'pk':18}))
         response_get=self.client.get(reverse('accounts:user_profile',args=[19]))
-        self.assertEquals(response_get.status_code,200)
+        #self.assertEqual(response_get.status_code,200)
+        self.assertRedirects(response_get,reverse('accounts:user_profile_edit',args=[19]),status_code=302,target_status_code=200)
         self.assertTemplateUsed(response_get,'accounts/profile.html')
 
+    def test_failure_get_with_not_exists_user(self):
+        response=self.client.get(reverse('accounts:user_profile',args=[1000]))
+        self.assertEqual(response.status_code,404)
 
 class TestUserProfileEditView(TestCase):
     def test_success_get(self):
-        response_get=self.client.get(reverse('accounts:user_profile_edit',kwargs={'pk':99}))
-        self.assertEquals(response_get.status_code,200)
+        response_get=self.client.get(reverse('accounts:user_profile_edit',args=[19]))
+        self.assertEqual(response_get.status_code,200)
         self.assertTemplateUsed(response_get,'accounts/profile_edit.html')
 
     def test_success_post(self):
         data_post = {
-            'hobby':'野球',
-            'introduction':'私は宇宙人です。',
+            'hobby':'Tinder',
+            'introduction':'岡田歩は自分の甘いフェイスを活かして女漁りをしています。最近女の子におごるのが負担大きくて嫌になっているみたいです。',
         }
-        response_post= self.client.post(reverse('accounts:user_profile_edit',kwargs={'pk':19}),data_post)
         self.client.login(username='岡田歩', password='yarichinn1225')
-        self.assertRedirects(response_post,reverse('accounts:user_profile_edit',kwargs={'pk':19}),status_code=302,target_status_code=200)
+        response_post= self.client.post(reverse('accounts:user_profile_edit',args=[19]),data_post)
+        self.assertRedirects(response_post,reverse('accounts:user_profile',args=[19]),status_code=302,target_status_code=200)
         user_object=Profile.objects.get(pk=19)
-        self.assertEquals(user_object.hobby,data_post['hobby'])
-        self.assertEquals(user_object.introduction,data_post['introduction'])
+        self.assertEqual(user_object.hobby,data_post['hobby'])
+        self.assertEqual(user_object.introduction,data_post['introduction'])
 
     def test_failure_post_with_not_exists_user(self):
 
         response=self.client.get(reverse('accounts:user_profile_edit',kwargs={'pk':19}))
-        self.assertAlmostEquals(response.status_code,404)
+        self.assertEquals(response.status_code,404)
 
     def test_failure_post_with_incorrect_user(self):
         pass
@@ -286,8 +290,8 @@ class TestUserProfileEditView(TestCase):
             'introduction':'私は宇宙人です',
         }
         response_incorrect_user=self.client.post(reverse('accounts:user_profile_edit',kwargs={'pk':99}),data_incorrect_user)
-        self.assertEquals(response_incorrect_user.status_code,403)
-        profile_object=Profile.objects.get(pk=99)
+        self.assertEqual(response_incorrect_user.status_code,403)
+        profile_object=Profile.objects.get(pk=2)
         self.assertFalse(profile_object.hobby,data_incorrect_user['hobby'])
         self.assertFalse(profile_object.introduction,data_incorrect_user['introduction'])
         
