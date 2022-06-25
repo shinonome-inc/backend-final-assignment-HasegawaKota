@@ -32,27 +32,22 @@ class Login(LoginView):#ログインページ
     form_class = LoginForm
     template_name = 'accounts/login.html'
 
-class Logout(LoginRequiredMixin,LoginView):#ログアウトページ
-    template_name = 'accounts/logout.html'
+class Logout(LoginRequiredMixin,LogoutView):#ログアウトページ
+    template_name = 'accounts/login.html'
 
 class UserProfileView(LoginRequiredMixin,DetailView):
     model = Profile
     template_name = 'accounts/profile.html'
 
-    def get_success_url(self):
-        return reverse_lazy('accounts:user_profile_edit',args=['pk'])
 class UserProfileEditView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
-    model= Profile
+    model = Profile
     form_class = ProfileForm
     template_name = 'accounts/profile_edit.html'
-    
-
-
 
     def get_success_url(self):
-        return reverse_lazy('accounts:user_profile',kwargs={'pk':self.object.pk})#こっちだと成功
+        return reverse_lazy('accounts:user_profile',kwargs={'pk':self.object.pk})#こっちだと成功 おそらくform_class=を提示しているから
         #return reverse_lazy('accounts:user_profile',args=['pk'])#こっちだとエラー
-
+        
 
     def test_func(self):
         # pkが現在ログイン中ユーザと同じ、またはsuperuserならOK。

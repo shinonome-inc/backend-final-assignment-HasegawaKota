@@ -3,8 +3,8 @@
 {% block title %}プロフィール編集{% endblock %}
 
 {% block content %}
-  <form method="post">{% csrf_token %}
+  <form method = "post">{% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" name="プロフィール編集">編集完了</button>
+    <button type = "submit" name="プロフィール編集">編集完了</button>
   </form>
 {% endblock content %}

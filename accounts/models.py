@@ -16,9 +16,9 @@ class User(AbstractUser,PermissionsMixin):
         db_table = 'User'
  
 class Profile(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE,related_name='profile',primary_key=True)#on_deleteがないとエラーになったわ
-    introduction=models.CharField('自己紹介',max_length=255,blank=True)
-    hobby=models.CharField('趣味',max_length=255,blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', primary_key=True)#on_deleteがないとエラーになったわ
+    introduction = models.CharField('自己紹介', max_length=255, blank=True)
+    hobby = models.CharField('趣味', max_length=255, blank=True)
 
     class Meta:
         db_table = 'Profile'

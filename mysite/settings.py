@@ -129,7 +129,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL ='accounts:home' #ここaccounts/homeってやるととんでもないURLになる。なんで？/accounts/login/accounts/homeが返ってくる
-LOGOUT_REDIRECT_URL = '/index'
+LOGIN_REDIRECT_URL = 'accounts:home' #ここaccounts/homeってやるととんでもないURLになる。なんで？/accounts/login/accounts/homeが返ってくる
+LOGOUT_REDIRECT_URL = 'accounts:login'
 
 
