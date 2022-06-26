@@ -45,10 +45,8 @@ class UserProfileEditView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
     template_name = 'accounts/profile_edit.html'
 
     def get_success_url(self):
-        return reverse('accounts:user_profile',kwargs={'pk':self.object.pk})#こっちだと成功 おそらくform_class=を提示しているから
-        #return reverse_lazy('accounts:user_profile',args=['pk'])#こっちだとエラー
+        return reverse('accounts:user_profile', kwargs={'pk':self.object.pk})
         
-
     def test_func(self):
         # pkが現在ログイン中ユーザと同じ、またはsuperuserならOK。
         current_user = self.request.user
