@@ -9,6 +9,6 @@
     <li>{% if profile.hobby %}{{profile.hobby}}{% else %}趣味　未設定{% endif %}</li>
     <li>{% if profile.introduction %}{{profile.introduction}}{% else %}自己紹介　未設定{% endif %}</li>
   </ul>
-  <a href = "{% url 'accounts:user_profile_edit' user.pk %}" class = "btn btn-primary">プロフィール編集したいなら来な！</a>
+  <a href="{% url 'accounts:user_profile_edit' user.pk %}" class="btn btn-primary">プロフィール編集したいなら来な！</a>
 
 {% endblock content %}

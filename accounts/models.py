@@ -1,15 +1,14 @@
-import profile
-import re
+
 from django.contrib.auth.models import AbstractUser,PermissionsMixin
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-#from .models import User
+
 
 
 
 #デフォルトで用意されているUserではない
-class User(AbstractUser,PermissionsMixin):
+class User(AbstractUser, PermissionsMixin):
     email = models.EmailField(max_length=254)
 
     class Meta:

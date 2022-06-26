@@ -1,6 +1,4 @@
-import profile
-from pyclbr import Class
-from xml.etree.ElementInclude import DEFAULT_MAX_INCLUSION_DEPTH
+
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
@@ -37,7 +35,3 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('introduction','hobby')
-
-
-      
-

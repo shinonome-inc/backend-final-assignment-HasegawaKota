@@ -1,7 +1,7 @@
 
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy ,reverse
 
-from django.views.generic import TemplateView,CreateView,UpdateView,DetailView,ListView
+from django.views.generic import TemplateView,CreateView,UpdateView,DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth import authenticate,login
@@ -45,7 +45,7 @@ class UserProfileEditView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
     template_name = 'accounts/profile_edit.html'
 
     def get_success_url(self):
-        return reverse_lazy('accounts:user_profile',kwargs={'pk':self.object.pk})#こっちだと成功 おそらくform_class=を提示しているから
+        return reverse('accounts:user_profile',kwargs={'pk':self.object.pk})#こっちだと成功 おそらくform_class=を提示しているから
         #return reverse_lazy('accounts:user_profile',args=['pk'])#こっちだとエラー
         
 
@@ -60,5 +60,3 @@ class HomeView(LoginRequiredMixin,TemplateView):
 
 class WelcomeView(TemplateView):
     template_name = 'welcome/index.html'
-
-

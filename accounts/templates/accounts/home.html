@@ -2,8 +2,6 @@
 
 { % block tiitle % }ホーム{% endblock title}
 {% block content %}ホームだよん
-  <a href = "{% url 'accounts:user_profile' pk=user.pk %}" class = "btn btn-primary">プロフィール閲覧</a>
+  <a href="{% url 'accounts:user_profile' pk=user.pk %}" class = "btn btn-primary">プロフィール閲覧</a>
 
 {% endblock content %}
-
-
