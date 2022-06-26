@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth import SESSION_KEY
+from django.contrib.auth.models import User
 
 from .models import User, Profile
 from mysite import settings
@@ -20,10 +21,10 @@ class SignUpTests(TestCase):
     def test_success_post(self):
         
         data_post = {
-            'email':'example@example.com',
-            'username':'sample',
-            'password1':'testpassword',
-            'password2':'testpassword',
+            'email': 'example@example.com',
+            'username': 'sample',
+            'password1': 'testpassword',
+            'password2': 'testpassword',
             }
         response_post = self.client.post(reverse('accounts:signup'), data_post)
         
@@ -36,10 +37,10 @@ class SignUpTests(TestCase):
 
     def test_failure_post_with_empty_form(self):
         data_empty_form = {
-            'email':'',
-            'username':'',
-            'password1':'',
-            'password2':'',
+            'email': '',
+            'username': '',
+            'password1': '',
+            'password2': '',
         }
         
         
@@ -57,10 +58,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_empty_username(self):
 
         data_empty_username = {
-             'email':'example@example.com',
-             'username':'',
-             'password1':'example12345',
-             'password2':'example12345',
+             'email': 'example@example.com',
+             'username': '',
+             'password1': 'example12345',
+             'password2': 'example12345',
          }
         response_empty_username = self.client.post(reverse('accounts:signup'), data_empty_username)
         self.assertEquals(response_empty_username.status_code, 200)
@@ -75,10 +76,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_empty_email(self):
 
         data_empty_email = {
-             'email':'',
-             'username':'sample',
-             'password1':'example12345',
-             'password2':'example12345',
+             'email': '',
+             'username': 'sample',
+             'password1': 'example12345',
+             'password2': 'example12345',
          }
         response_empty_email = self.client.post(reverse('accounts:signup'), data_empty_email)
         self.assertEquals(response_empty_email.status_code, 200)
@@ -89,10 +90,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_empty_password(self):
         #ブランクのあるpaswordが送信された時
         data_empty_password = {
-             'email':'example@example.com',
-             'username':'sample',
-             'password1':'',
-             'password2':'',
+             'email': 'example@example.com',
+             'username': 'sample',
+             'password1': '',
+             'password2': '',
          }
         response_empty_password = self.client.post(reverse('accounts:signup'), data_empty_password)
         self.assertEquals(response_empty_password.status_code, 200)
@@ -104,10 +105,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_duplicated_user(self):
         #既に存在するユーザーを登録するリクエストを送った時
         data_duplicated_user = {
-             'email':'example@example.com',
-             'username':'sample',
-             'password1':'example12345',
-             'password2':'example12345',
+             'email': 'example@example.com',
+             'username': 'sample',
+             'password1': 'example12345',
+             'password2': 'example12345',
          }
         
         
@@ -128,10 +129,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_invalid_email(self):
         #emailが有効な形式でないリクエストを送信するとき
         data_invalid_email = {
-             'email':'ex',
-             'username':'sample',
-             'password1':'example12345',
-             'password2':'example12345',
+             'email': 'ex',
+             'username': 'sample',
+             'password1': 'example12345',
+             'password2': 'example12345',
          }
         response_invalid_email = self.client.post(reverse('accounts:signup'), data_invalid_email)
         self.assertEquals(response_invalid_email.status_code, 200)
@@ -142,10 +143,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_too_short_password(self):
         #passwordが短すぎるとき
         data_too_short_password = {
-             'email':'example@example.com',
-             'username':'sample',
-             'password1':'test',
-             'password2':'test',
+             'email': 'example@example.com',
+             'username': 'sample',
+             'password1': 'test',
+             'password2': 'test',
          }
         response_too_short_password = self.client.post(reverse('accounts:signup'), data_too_short_password)
         self.assertEquals(response_too_short_password.status_code, 200)
@@ -156,10 +157,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_password_similar_to_username(self):
         #usernameに似たpasswordでリクエストを送信する
         data_similar_to_username = {
-            'email':'example@example.com',
-             'username':'example12345',
-             'password1':'example12345',
-             'password2':'example12345',
+            'email': 'example@example.com',
+             'username': 'example12345',
+             'password1': 'example12345',
+             'password2': 'example12345',
         }
         response_similar_to_username = self.client.post(reverse('accounts:signup'), data_similar_to_username)
         self.assertFalse(User.objects.exists())
@@ -171,10 +172,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_only_numbers_password(self):
         #すべて数字のパスワードでリクエストを送信する
         data_only_numbers_password={
-            'email':'example@example.com',
-             'username':'sample',
-             'password1':'1111111111',
-             'password2':'1111111111',
+            'email': 'example@example.com',
+             'username': 'sample',
+             'password1': '1111111111',
+             'password2': '1111111111',
         }
         reponse_only_numbers_password = self.client.post(reverse('accounts:signup'), data_only_numbers_password)
         self.assertEquals(reponse_only_numbers_password.status_code, 200)
@@ -186,10 +187,10 @@ class SignUpTests(TestCase):
     def test_failure_post_with_mismatch_password(self): 
         #パスワード１と２が異なるデータでリクエストを送信する
         data_mismatch_password = {
-            'email':'example@example.com',
-             'username':'sample',
-             'password1':'example12345',
-             'password2':'example123456',
+            'email': 'example@example.com',
+             'username': 'sample',
+             'password1': 'example12345',
+             'password2': 'example123456',
         }
         
         response_mismatch_password = self.client.post(reverse('accounts:signup'), data_mismatch_password)
@@ -201,13 +202,13 @@ class SignUpTests(TestCase):
 class TestHomeView(TestCase):#ログインしていない場合のテストも
     def setUp(self):
         data = {
-            'username':'yamada',
-            'email':'asaka@test.com',
-            'password1':'wasurenaide1108',
-            'password2':'wasurenaide1108',
+            'username': 'yamada',
+            'email': 'asaka@test.com',
+            'password1': 'wasurenaide1108',
+            'password2': 'wasurenaide1108',
         }
         self.client.post(reverse('accounts:signup'), data)
-        #self.client.login(username=data['username'], password=data['password1'])
+        
 
     def test_success_get(self):
         response = self.client.get(reverse('accounts:home'))
@@ -223,28 +224,25 @@ class TestLoginView(TestCase):
         self.assertTemplateUsed(response_get, 'accounts/login.html')
 
     def test_success_post(self):
+        User.objects.create_user(username='yamada', email='asaka@test.com', password='wasurenaide1108')
         data_post = {
             'username':'yamada',
             'password':'wasurenaide1108',
         }
-
-        data_signup={
-            'username':'yamada',
-            'email':'asaka@test.com',
-            'password1':'wasurenaide1108',
-            'password2':'wasurenaide1108',
-        }
-        self.client.post(reverse('accounts:signup'), data_signup)
+       
+        self.url = reverse('accounts:login')
         response_post = self.client.post(reverse('accounts:login'), data_post)
         
         self.assertRedirects(response_post, reverse(settings.LOGIN_REDIRECT_URL), status_code=302, target_status_code=200)
         self.assertIn(SESSION_KEY, self.client.session)
+
+       
         
     def test_failure_post_with_not_exists_user(self):
         #存在しないusername,passwordを送信する
         data_not_exists_user = {
-            'username':'aaaaaaaaaa',
-            'password':'Hasse118',
+            'username': 'aaaaaaaaaa',
+            'password': 'Hasse118',
         }
         response_not_exists_user = self.client.post(reverse('accounts:login'), data_not_exists_user)
         self.assertEquals(response_not_exists_user.status_code, 200)
@@ -264,23 +262,33 @@ class TestLoginView(TestCase):
 
 
 class TestLogoutView(TestCase):
+
+    def setUp(self):
+        data = {
+            'username': 'yamada',
+            'email': 'asaka@test.com',
+            'password1': 'wasurenaide1108',
+            'password2': 'wasurenaide1108',
+        }
+        self.client.post(reverse('accounts:signup'), data)
+
     def test_success_get(self):
         response = self.client.get(reverse('accounts:logout'))
         #self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse(settings.LOGIN_REDIRECT_URL), status_code=302, target_status_code=200)
+        self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL), status_code=302, target_status_code=200)
         self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestUserProfileView(TestCase):
     def setUp(self):
         data = {
-            'username':'yamada',
-            'email':'asaka@test.com',
-            'password1':'wasurenaide1108',
-            'password2':'wasurenaide1108',
+            'username': 'yamada',
+            'email': 'asaka@test.com',
+            'password1': 'wasurenaide1108',
+            'password2': 'wasurenaide1108',
         }
         self.client.post(reverse('accounts:signup'), data)
-        self.client.login(username=data['username'], password=data['password1'])
+        
          
     def test_success_get(self):
         user = Profile.objects.get()
@@ -297,10 +305,10 @@ class TestUserProfileEditView(TestCase):
 
     def setUp(self):
         data = {
-            'username':'yamada',
-            'email':'asaka@test.com',
-            'password1':'wasurenaide1108',
-            'password2':'wasurenaide1108',
+            'username': 'yamada',
+            'email': 'asaka@test.com',
+            'password1': 'wasurenaide1108',
+            'password2': 'wasurenaide1108',
         }
         self.client.post(reverse('accounts:signup'), data)
         self.client.login(username=data['username'], password=data['password1'])
@@ -314,8 +322,8 @@ class TestUserProfileEditView(TestCase):
 
     def test_success_post(self):
         data_post = {
-            'hobby':'サッカー',
-            'introduction':'全国の山田太郎はいつも代表の名前になっている',
+            'hobby': 'サッカー',
+            'introduction': '全国の山田太郎はいつも代表の名前になっている',
         }
         user = Profile.objects.get()
         response_post = self.client.post(reverse('accounts:user_profile_edit', kwargs={'pk':user.pk}), data_post)
@@ -332,8 +340,8 @@ class TestUserProfileEditView(TestCase):
     def test_failure_post_with_incorrect_user(self):
         #ほかのユーザーに対して有効なprofileのデータでリクエストを送信する
         incorrect_user_data = {
-            'hobby':'存在しない',
-            'introduction':'ドッペルゲンガーを探すこと'
+            'hobby': '存在しない',
+            'introduction': 'ドッペルゲンガーを探すこと'
         }
         
         response = self.client.post(reverse('accounts:user_profile_edit',kwargs={'pk':99}), incorrect_user_data)

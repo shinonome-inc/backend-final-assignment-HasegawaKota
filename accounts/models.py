@@ -10,7 +10,7 @@ from django.dispatch import receiver
 #デフォルトで用意されているUserではない
 class User(AbstractUser, PermissionsMixin):
     email = models.EmailField(max_length=254)
-
+    
     class Meta:
         db_table = 'User'
  

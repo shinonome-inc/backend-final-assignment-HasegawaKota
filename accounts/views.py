@@ -33,7 +33,7 @@ class Login(LoginView):#ログインページ
     template_name = 'accounts/login.html'
 
 class Logout(LoginRequiredMixin,LogoutView):#ログアウトページ
-    template_name = 'accounts/login.html'
+    template_name = 'accounts/logout.html'
 
 class UserProfileView(LoginRequiredMixin,DetailView):
     model = Profile
