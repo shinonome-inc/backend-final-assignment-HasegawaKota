@@ -28,7 +28,7 @@ class SignUpTests(TestCase):
             }
         response_post = self.client.post(reverse('accounts:signup'), data_post)
         
-        self.assertRedirects(response_post, reverse('accounts:home'), status_code=302,target_status_code=200)  
+        self.assertRedirects(response_post, reverse('accounts:home'), status_code=302, target_status_code=200)  
         
         self.assertTrue(User.objects.filter(username='sample', email='example@example.com').exists())
         self.assertIn(SESSION_KEY, self.client.session)
@@ -50,7 +50,7 @@ class SignUpTests(TestCase):
         self.assertFalse(User.objects.exists())
 
         
-        self.assertFormError(response_empty_form, 'form','username', 'このフィールドは必須です。')
+        self.assertFormError(response_empty_form, 'form', 'username', 'このフィールドは必須です。')
         self.assertFormError(response_empty_form, 'form', 'email', 'このフィールドは必須です。')
         self.assertFormError(response_empty_form, 'form', 'password1', 'このフィールドは必須です。')
         self.assertFormError(response_empty_form, 'form', 'password2', 'このフィールドは必須です。')
@@ -199,7 +199,7 @@ class SignUpTests(TestCase):
         self.assertFormError(response_mismatch_password, 'form', 'password2', '確認用パスワードが一致しません。')
 
 
-class TestHomeView(TestCase):#ログインしていない場合のテストも
+class TestHomeView(TestCase):
     def setUp(self):
         data = {
             'username': 'yamada',
@@ -272,9 +272,9 @@ class TestLogoutView(TestCase):
         }
         self.client.post(reverse('accounts:signup'), data)
 
-    def test_success_get(self):
+    def test_success_logout(self):
         response = self.client.get(reverse('accounts:logout'))
-        #self.assertEqual(response.status_code, 302)
+        
         self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL), status_code=302, target_status_code=200)
         self.assertNotIn(SESSION_KEY, self.client.session)
 
@@ -344,7 +344,7 @@ class TestUserProfileEditView(TestCase):
             'introduction': 'ドッペルゲンガーを探すこと'
         }
         
-        response = self.client.post(reverse('accounts:user_profile_edit',kwargs={'pk':99}), incorrect_user_data)
+        response = self.client.post(reverse('accounts:user_profile_edit', kwargs={'pk':99}), incorrect_user_data)
         self.assertEquals(response.status_code, 403)
         self.assertFalse(User.objects.filter(username='satou').exists())
         

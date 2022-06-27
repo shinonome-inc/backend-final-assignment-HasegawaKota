@@ -14,7 +14,7 @@ class SignupForm(UserCreationForm):
 
     class Meta:
        model = User
-       fields = ('username', 'password1', 'password2', 'email')
+       fields = ('username', 'email')
 
 class LoginForm(AuthenticationForm):
     def __init__(self,*args, **kwargs):
@@ -24,13 +24,11 @@ class LoginForm(AuthenticationForm):
             field.widget.attrs['placeholder'] = field.label
             #attrsがないとエラーになる
 
-    class Meta:
-        fields = ('username', 'password')
+    
 
 
 class ProfileForm(forms.ModelForm):
-    def __init__(self,*args, **kwargs):
-        super().__init__(*args, **kwargs)
+
 
     class Meta:
         model = Profile

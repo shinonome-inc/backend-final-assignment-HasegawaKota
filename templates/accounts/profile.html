@@ -1,4 +1,4 @@
-{% extends 'base/base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}プロフィール閲覧{% endblock %}
 
@@ -11,4 +11,4 @@
   </ul>
   <a href="{% url 'accounts:user_profile_edit' user.pk %}" class="btn btn-primary">プロフィール編集したいなら来な！</a>
 
-{% endblock content %}
+{% endblock %}

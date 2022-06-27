@@ -26,12 +26,12 @@ class Profile(models.Model):
       return str(self.user)
   
 
-
 #新ユーザーの作成時に空のprofileも作成する
 @receiver(post_save, sender=User)
 def user_is_created(sender, instance, created, **kwargs):
     if created:
         Profile.objects.get_or_create(user=instance)
+
 
 
 
