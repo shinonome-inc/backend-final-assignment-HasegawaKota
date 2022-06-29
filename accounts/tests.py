@@ -285,18 +285,13 @@ class TestLogoutView(TestCase):
 
 class TestUserProfileView(TestCase):
     def setUp(self):
-         data = {
-            'username': 'yamada',
-            'email': 'asaka@test.com',
-            'password1': 'wasurenaide1108',
-            'password2': 'wasurenaide1108',
-        }
-         self.client.post(reverse('accounts:signup'), data)
+        User.objects.create_user(username='yamada', email='asaka@test.com', password='wasurenaide1108')
+        self.client.login(username='yamada', password='wasurenaide1108')
+      
 
-  
     def test_success_get(self):
-        users = Profile.objects.get()
-        response_get = self.client.get(reverse('accounts:user_profile', kwargs={'pk':users.pk}))
+        user = Profile.objects.get()
+        response_get = self.client.get(reverse('accounts:user_profile', kwargs={'pk':user.pk}))
         self.assertEqual(response_get.status_code, 200)
         self.assertTemplateUsed(response_get, 'accounts/profile.html')
 
