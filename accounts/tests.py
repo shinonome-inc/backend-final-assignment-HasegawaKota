@@ -297,7 +297,7 @@ class TestUserProfileView(TestCase):
         self.assertTemplateUsed(response_get, 'accounts/profile.html')
 
     def test_failure_get_with_not_exists_user(self):
-        response = self.client.get(reverse('accounts:user_profile', args=[1000]))
+        response = self.client.get(reverse('accounts:user_profile', kwargs={'pk':1000}))
         self.assertEqual(response.status_code, 404)
 
 
@@ -319,18 +319,19 @@ class TestUserProfileEditView(TestCase):
     def test_success_post(self):
         data_post = {
             'hobby': 'サッカー',
-            'introduction': '全国の山田太郎はいつも代表の名前になっている',
+            'introduction': '語れる人間ではない',
         }
-        user = Profile.objects.get()
+        user = User.objects.get(username='yamada')
         response_post = self.client.post(reverse('accounts:user_profile_edit', kwargs={'pk':user.pk}), data_post)
         self.assertRedirects(response_post, reverse('accounts:user_profile', kwargs={'pk':user.pk}), status_code=302, target_status_code=200)
-        user_object = Profile.objects.get()
+        user_object = Profile.objects.get(hobby='サッカー')
         self.assertEqual(user_object.hobby, data_post['hobby'])
         self.assertEqual(user_object.introduction, data_post['introduction'])
 
     def test_failure_post_with_not_exists_user(self):
-        #存在しないユーザーに対して有効なprofileのデータでリクエストを送信する
-        response = self.client.get(reverse('accounts:user_profile', args=[1000]))
+        
+        
+        response = self.client.get(reverse('accounts:user_profile', kwargs={'pk':1000}))
         self.assertEqual(response.status_code, 404)
         
     def test_failure_post_with_incorrect_user(self):
@@ -339,8 +340,9 @@ class TestUserProfileEditView(TestCase):
             'hobby': '存在しない',
             'introduction': 'ドッペルゲンガーを探すこと'
         }
-        
-        response = self.client.post(reverse('accounts:user_profile_edit', kwargs={'pk':99}), incorrect_user_data)
+        User.objects.create_user(username='nisemono', email='wakou@test.com', password='wasuretene1108')
+        incorrect_user = User.objects.get(username='nisemono')
+        response = self.client.post(reverse('accounts:user_profile_edit', kwargs={'pk':incorrect_user.pk}), incorrect_user_data)
         self.assertEquals(response.status_code, 403)
         self.assertFalse(User.objects.filter(username='satou').exists())
         
