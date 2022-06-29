@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.contrib.auth import SESSION_KEY
 from django.contrib.auth.models import User
 
-from .models import User, Profile
+from .models import User, Profile, user_is_created
 from mysite import settings
 
 
@@ -217,21 +217,25 @@ class TestHomeView(TestCase):
 
 
 class TestLoginView(TestCase):
+
+    def setUp(self):
+        User.objects.create_user(username='yamada', email='asaka@test.com', password='wasurenaide1108')
+        self.url = reverse('accounts:login')
    
     def test_success_get(self):
-        response_get = self.client.get(reverse('accounts:login'))
+        response_get = self.client.get(self.url)
         self.assertEquals(response_get.status_code, 200)
         self.assertTemplateUsed(response_get, 'accounts/login.html')
 
     def test_success_post(self):
-        User.objects.create_user(username='yamada', email='asaka@test.com', password='wasurenaide1108')
+        
         data_post = {
             'username':'yamada',
             'password':'wasurenaide1108',
         }
        
-        self.url = reverse('accounts:login')
-        response_post = self.client.post(reverse('accounts:login'), data_post)
+        
+        response_post = self.client.post(self.url, data_post)
         
         self.assertRedirects(response_post, reverse(settings.LOGIN_REDIRECT_URL), status_code=302, target_status_code=200)
         self.assertIn(SESSION_KEY, self.client.session)
@@ -244,7 +248,7 @@ class TestLoginView(TestCase):
             'username': 'aaaaaaaaaa',
             'password': 'Hasse118',
         }
-        response_not_exists_user = self.client.post(reverse('accounts:login'), data_not_exists_user)
+        response_not_exists_user = self.client.post(self.url, data_not_exists_user)
         self.assertEquals(response_not_exists_user.status_code, 200)
         self.assertFormError(response_not_exists_user, 'form', '', '正しいユーザー名とパスワードを入力してください。どちらのフィールドも大文字と小文字は区別されます。')
         self.assertNotIn(SESSION_KEY, self.client.session)
@@ -255,7 +259,7 @@ class TestLoginView(TestCase):
             'password' : '',
         }
 
-        response_with_empty_password=self.client.post(reverse('accounts:login'), data_with_empty_password)
+        response_with_empty_password=self.client.post(self.url, data_with_empty_password)
         self.assertEquals(response_with_empty_password.status_code, 200)
         self.assertFormError(response_with_empty_password, 'form', 'password', 'このフィールドは必須です。')
         self.assertNotIn(SESSION_KEY, self.client.session)
@@ -281,18 +285,18 @@ class TestLogoutView(TestCase):
 
 class TestUserProfileView(TestCase):
     def setUp(self):
-        data = {
+         data = {
             'username': 'yamada',
             'email': 'asaka@test.com',
             'password1': 'wasurenaide1108',
             'password2': 'wasurenaide1108',
         }
-        self.client.post(reverse('accounts:signup'), data)
-        
-         
+         self.client.post(reverse('accounts:signup'), data)
+
+  
     def test_success_get(self):
-        user = Profile.objects.get()
-        response_get = self.client.get(reverse('accounts:user_profile', kwargs={'pk':user.pk}))
+        users = Profile.objects.get()
+        response_get = self.client.get(reverse('accounts:user_profile', kwargs={'pk':users.pk}))
         self.assertEqual(response_get.status_code, 200)
         self.assertTemplateUsed(response_get, 'accounts/profile.html')
 
@@ -311,7 +315,7 @@ class TestUserProfileEditView(TestCase):
             'password2': 'wasurenaide1108',
         }
         self.client.post(reverse('accounts:signup'), data)
-        self.client.login(username=data['username'], password=data['password1'])
+        
 
     def test_success_get(self):
         user = Profile.objects.get()
@@ -327,7 +331,7 @@ class TestUserProfileEditView(TestCase):
         }
         user = Profile.objects.get()
         response_post = self.client.post(reverse('accounts:user_profile_edit', kwargs={'pk':user.pk}), data_post)
-        self.assertRedirects(response_post, reverse('accounts:user_profile', kwargs={'pk':user.pk}),status_code=302, target_status_code=200)
+        self.assertRedirects(response_post, reverse('accounts:user_profile', kwargs={'pk':user.pk}), status_code=302, target_status_code=200)
         user_object = Profile.objects.get()
         self.assertEqual(user_object.hobby, data_post['hobby'])
         self.assertEqual(user_object.introduction, data_post['introduction'])

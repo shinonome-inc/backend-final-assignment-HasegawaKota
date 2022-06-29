@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block tiitle %}ホーム{% endblock %}
+{% block title %}ホーム{% endblock %}
 {% block content %}ホームだよん
   <a href="{% url 'accounts:user_profile' pk=user.pk %}" class = "btn btn-primary">プロフィール閲覧</a>
   <a href="{% url 'accounts:logout' %}" class = "btn btn-primary">ログアウト</a>
