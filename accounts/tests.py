@@ -1,3 +1,4 @@
+from subprocess import IDLE_PRIORITY_CLASS
 from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth import SESSION_KEY
@@ -290,7 +291,7 @@ class TestUserProfileView(TestCase):
       
 
     def test_success_get(self):
-        user = Profile.objects.get()
+        user = User.objects.get(username='yamada')
         response_get = self.client.get(reverse('accounts:user_profile', kwargs={'pk':user.pk}))
         self.assertEqual(response_get.status_code, 200)
         self.assertTemplateUsed(response_get, 'accounts/profile.html')
@@ -303,17 +304,13 @@ class TestUserProfileView(TestCase):
 class TestUserProfileEditView(TestCase):
 
     def setUp(self):
-        data = {
-            'username': 'yamada',
-            'email': 'asaka@test.com',
-            'password1': 'wasurenaide1108',
-            'password2': 'wasurenaide1108',
-        }
-        self.client.post(reverse('accounts:signup'), data)
+        User.objects.create_user(username='yamada', email='asaka@test.com', password='wasurenaide1108')
+        self.client.login(username='yamada', password='wasurenaide1108')
+        
         
 
     def test_success_get(self):
-        user = Profile.objects.get()
+        user = User.objects.get(username='yamada')
         url = reverse('accounts:user_profile_edit', kwargs={'pk':user.pk})
         response_get = self.client.get(url)
         self.assertEqual(response_get.status_code, 200)
