@@ -329,7 +329,7 @@ class TestUserProfileEditView(TestCase):
         self.assertEqual(user_object.introduction, data_post['introduction'])
 
     def test_failure_post_with_not_exists_user(self):
-        
+        #存在しないユーザーに対して有効なプロフィールのデータでリクエストをする
         
         response = self.client.get(reverse('accounts:user_profile', kwargs={'pk':1000}))
         self.assertEqual(response.status_code, 404)
@@ -337,14 +337,17 @@ class TestUserProfileEditView(TestCase):
     def test_failure_post_with_incorrect_user(self):
         #ほかのユーザーに対して有効なprofileのデータでリクエストを送信する
         incorrect_user_data = {
-            'hobby': '存在しない',
-            'introduction': 'ドッペルゲンガーを探すこと'
+            'hobby': 'サッカー',
+            'introduction': 'ないよ'
         }
         User.objects.create_user(username='nisemono', email='wakou@test.com', password='wasuretene1108')
         incorrect_user = User.objects.get(username='nisemono')
-        response = self.client.post(reverse('accounts:user_profile_edit', kwargs={'pk':incorrect_user.pk}), incorrect_user_data)
-        self.assertEquals(response.status_code, 403)
-        self.assertFalse(User.objects.filter(username='satou').exists())
+        response_incorrect = self.client.post(reverse('accounts:user_profile_edit', kwargs={'pk':incorrect_user.pk}), incorrect_user_data)
+        self.assertEquals(response_incorrect.status_code, 403)
+        self.assertFalse(Profile.objects.filter(hobby='サッカー', introduction='ないよ').exists())
+        
+        
+      
         
 
 class TestFollowView(TestCase):
