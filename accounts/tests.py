@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.contrib.auth import SESSION_KEY
 from django.contrib.auth.models import User
 
-from .models import User, Profile, user_is_created
+from .models import User, Profile 
 from mysite import settings
 
 

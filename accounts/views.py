@@ -7,6 +7,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
 
 from accounts.models import User, Profile
+from tweets.models import Tweet
 from .forms import SignupForm, LoginForm, ProfileForm
 
 
@@ -35,17 +36,25 @@ class Login(LoginView):
 class Logout(LoginRequiredMixin, LogoutView):
     template_name = 'accounts/logout.html'
 
+
 class UserProfileView(LoginRequiredMixin, DetailView):
     model = Profile
+    #context_object_name = 'profile_list'
     template_name = 'accounts/profile.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['tweet_list'] = Tweet.objects.select_related('user').filter(user=self.request.user)
+        return context
+
 
 class UserProfileEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Profile
     form_class = ProfileForm
     template_name = 'accounts/profile_edit.html'
-
+    
     def get_success_url(self):
-        return reverse('accounts:user_profile', kwargs={'pk':self.object.pk})
+        reverse('accounts:user_profile', kwargs={'pk':self.object.pk})
         
     def test_func(self):
         # pkが現在ログイン中ユーザと同じならOK。
