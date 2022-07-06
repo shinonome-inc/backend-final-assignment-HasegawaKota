@@ -8,6 +8,6 @@
     <l1>{% if tweet.created_at %}{{tweet.created_at}}{% endif %}</li>
     <li>{% if tweet.contents %}{{tweet.contents}}{% endif %}</li>
   </ul>
-  <a href="{% url 'tweet:top' %}" class="btn btn-primary">ツイートトップページ</a>
+  <a href="{% url 'accounts:home' %}" class="btn btn-primary">ツイートトップページ</a>
   <a href="{% url 'tweet:delete' tweet.pk %}" class="btn btn-primary">削除する</a>
 {% endblock %}
