@@ -1,11 +1,10 @@
-
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, DeleteView
-from django.core.exceptions import PermissionDenied
+from django.http import Http404
 
-from tweets.forms import TweetForm
-from tweets.models import Tweet
+from .forms import TweetForm
+from .models import Tweet
 # Create your views here.
 
 
@@ -15,7 +14,7 @@ class TweetCreateView(LoginRequiredMixin, CreateView):
     template_name = 'tweets/tweets_create.html'
 
     def get_success_url(self):
-        return reverse('tweet:detail', kwargs={'pk': self.object.pk})
+        return reverse('tweets:detail', kwargs={'pk': self.object.pk})
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -27,16 +26,15 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     template_name = 'tweets/tweets_detail.html'
 
 
-class TweetDeleteView(LoginRequiredMixin, DeleteView):
+class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Tweet
     template_name = 'tweets/tweets_delete.html'
     success_url = reverse_lazy('accounts:home')
-    # ログインしているユーザーしか消去できない機能
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-
-        if obj.user != self.request.user:
-            raise PermissionDenied
-
-        return obj
+    def test_func(self):
+        if Tweet.objects.filter(pk=self.kwargs["pk"]).exists():
+            current_user = self.request.user
+            tweet_user = Tweet.objects.get(pk=self.kwargs["pk"]).user
+            return current_user == tweet_user
+        else:
+            return Http404

@@ -4,22 +4,15 @@
 
 {% block content %}
 <form action="" method="POST">
-    <div class="col-md-6 offset-md-3">
-        <div class="card">
-            <div class="card-body">
-                    {% for field in form %}
-                    {{ field }}
-                    {% endfor %}
-  
-                    {% for error in form.non_field_errors %}
-                  <div class="alert alert-danger" role="alert">
-                       <p>{{ error }}</p>
-                  </div>
-                    {% endfor %}
-
-                <button type="submit" class="btn btn-primary">ツイートする</button>
-                {% csrf_token %}
-                <a href="{% url 'accounts:home' %}" class="btn btn-primary">キャンセル</a>
+  <div class="col-md-6 offset-md-3">
+    <div class="card">
+      <div class="card-body">
+        {% for field in form %}
+          {{ field }}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">ツイートする</button>
+        {% csrf_token %}
+        <a href="{% url 'accounts:home' %}" class="btn btn-primary">キャンセル</a>
             </div>
         </div>
     </div>

@@ -186,7 +186,7 @@ class TestHomeView(TestCase):
         response = self.client.get(reverse('accounts:home'))
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'accounts/home.html')
-        self.assertQuerysetEqual(response.context['tweet_list'], Tweet.objects.order_by('created_at'))
+        self.assertQuerysetEqual(response.context['tweets_list'], Tweet.objects.order_by('created_at'))
         # 順番も一致させる必要があるみたい
 
 

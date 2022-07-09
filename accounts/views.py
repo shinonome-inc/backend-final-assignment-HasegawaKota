@@ -1,12 +1,10 @@
-
 from django.urls import reverse_lazy, reverse
-
 from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
 
-from accounts.models import User, Profile
+from .models import User, Profile
 from tweets.models import Tweet
 from .forms import SignupForm, LoginForm, ProfileForm
 
@@ -67,7 +65,7 @@ class HomeView(LoginRequiredMixin, ListView):
     model = Tweet
     template_name = 'accounts/home.html'
     paginate_by = 20
-    context_object_name = 'tweet_list'
+    context_object_name = 'tweets_list'
 
     def get_queryset(self):
         return Tweet.objects.all().select_related('user')
