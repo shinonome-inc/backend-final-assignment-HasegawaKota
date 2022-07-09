@@ -6,6 +6,6 @@ from .models import Tweet
 class TweetForm(ModelForm):
     class Meta:
         model = Tweet
-        fields = ('contents',)
+        fields = ("contents",)
         # カンマがないとえらーになるのなんで？
-        widgets = {'contents': Textarea(attrs={'placeholder': 'ツイート'})}
+        widgets = {"contents": Textarea(attrs={"placeholder": "ツイート"})}

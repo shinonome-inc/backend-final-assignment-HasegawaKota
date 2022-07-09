@@ -5,16 +5,17 @@ from django.http import Http404
 
 from .forms import TweetForm
 from .models import Tweet
+
 # Create your views here.
 
 
 class TweetCreateView(LoginRequiredMixin, CreateView):
     model = Tweet
     form_class = TweetForm
-    template_name = 'tweets/tweets_create.html'
+    template_name = "tweets/tweets_create.html"
 
     def get_success_url(self):
-        return reverse('tweets:detail', kwargs={'pk': self.object.pk})
+        return reverse("tweets:detail", kwargs={"pk": self.object.pk})
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -23,13 +24,13 @@ class TweetCreateView(LoginRequiredMixin, CreateView):
 
 class TweetDetailView(LoginRequiredMixin, DetailView):
     model = Tweet
-    template_name = 'tweets/tweets_detail.html'
+    template_name = "tweets/tweets_detail.html"
 
 
 class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Tweet
-    template_name = 'tweets/tweets_delete.html'
-    success_url = reverse_lazy('accounts:home')
+    template_name = "tweets/tweets_delete.html"
+    success_url = reverse_lazy("accounts:home")
 
     def test_func(self):
         if Tweet.objects.filter(pk=self.kwargs["pk"]).exists():

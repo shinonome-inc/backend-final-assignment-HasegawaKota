@@ -4,7 +4,7 @@ from accounts.models import User
 
 
 class Tweet(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, to_field='id')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, to_field="id")
     contents = models.TextField(max_length=200, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -12,4 +12,4 @@ class Tweet(models.Model):
         return str(self.user)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
