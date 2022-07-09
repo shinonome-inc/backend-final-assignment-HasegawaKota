@@ -97,10 +97,10 @@ class TestTweetDeleteView(TestCase):
         self.assertTrue(Tweet.objects.filter(contents="ワンピースの映画早く見たい").exists())
 
     def test_failure_post_with_incorrect_user(self):
-        User.objects.create_user(
+        user = User.objects.create_user(
             username="satou", email="wakou@test.com", password="wasuretene1108"
         )
-        user = User.objects.get(username="satou")
+
         Tweet.objects.create(user=user, contents="ワンピース")
         tweet = Tweet.objects.get(contents="ワンピース")
         response = self.client.post(reverse("tweets:delete", kwargs={"pk": tweet.pk}))
