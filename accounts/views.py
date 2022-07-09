@@ -1,60 +1,83 @@
-
 from django.urls import reverse_lazy, reverse
-
-from django.views.generic import TemplateView, CreateView, UpdateView, DetailView
+from django.views.generic import (
+    TemplateView,
+    CreateView,
+    UpdateView,
+    DetailView,
+    ListView,
+)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
 
-from accounts.models import User, Profile
+from .models import User, Profile
+from tweets.models import Tweet
 from .forms import SignupForm, LoginForm, ProfileForm
-
 
 
 class SignupView(CreateView):
     model = User
     form_class = SignupForm
-    template_name = 'accounts/signup.html'
-    #success_url = reverse_lazy("app名:urls.pyで設定したname")
-    success_url = reverse_lazy('accounts:home')
+    template_name = "accounts/signup.html"
+    # success_url = reverse_lazy("app名:urls.pyで設定したname")
+    success_url = reverse_lazy("accounts:home")
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        username = form.cleaned_data.get('username')
-        email = form.cleaned_data.get('email')
-        raw_pass = form.cleaned_data.get('password1')
+        username = form.cleaned_data.get("username")
+        email = form.cleaned_data.get("email")
+        raw_pass = form.cleaned_data.get("password1")
         user = authenticate(username=username, email=email, password=raw_pass)
         if user is not None:
             login(self.request, user)
             return response
-        
+
+
 class Login(LoginView):
     form_class = LoginForm
-    template_name = 'accounts/login.html'
+    template_name = "accounts/login.html"
+
 
 class Logout(LoginRequiredMixin, LogoutView):
-    template_name = 'accounts/logout.html'
+    template_name = "accounts/logout.html"
+
 
 class UserProfileView(LoginRequiredMixin, DetailView):
     model = Profile
-    template_name = 'accounts/profile.html'
+    # context_object_name = 'profile_list'
+    template_name = "accounts/profile.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["tweet_list"] = Tweet.objects.select_related("user").filter(
+            user=self.request.user
+        )
+        return context
+
 
 class UserProfileEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Profile
     form_class = ProfileForm
-    template_name = 'accounts/profile_edit.html'
+    template_name = "accounts/profile_edit.html"
 
     def get_success_url(self):
-        return reverse('accounts:user_profile', kwargs={'pk':self.object.pk})
-        
+        return reverse("accounts:user_profile", kwargs={"pk": self.object.pk})
+
     def test_func(self):
         # pkが現在ログイン中ユーザと同じならOK。
         current_user = self.request.user
-        return current_user.pk == self.kwargs['pk']
+        return current_user.pk == self.kwargs["pk"]
 
-class HomeView(LoginRequiredMixin, TemplateView):
-    template_name = 'accounts/home.html'
-  
+
+class HomeView(LoginRequiredMixin, ListView):
+    model = Tweet
+    template_name = "accounts/home.html"
+    paginate_by = 20
+    context_object_name = "tweets_list"
+
+    def get_queryset(self):
+        return Tweet.objects.all().select_related("user")
+
 
 class WelcomeView(TemplateView):
-    template_name = 'welcome/index.html'
+    template_name = "welcome/index.html"

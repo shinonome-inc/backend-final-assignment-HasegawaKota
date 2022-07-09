@@ -1,8 +1,18 @@
 {% extends 'base.html' %}
 
 {% block title %}ホーム{% endblock %}
-{% block content %}ホームだよん
-  <a href="{% url 'accounts:user_profile' pk=user.pk %}" class = "btn btn-primary">プロフィール閲覧</a>
-  <a href="{% url 'accounts:logout' %}" class = "btn btn-primary">ログアウト</a>
+{% block content %}
+<p>ホームだよん</p>
+<a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-primary">プロフィール閲覧</a>
+<a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
+<a href="{% url 'tweets:create' %}" class="btn btn-primary">ツイート</a>
+
+{% for tweet in tweets_list %}
+<ul>
+  {{tweet.created_at}}
+  {{tweet.user}}
+  {{tweet.contents}}
+</ul>
+{% endfor %}
 
 {% endblock %}
