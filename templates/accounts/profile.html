@@ -22,4 +22,11 @@
   </li>
   {% endfor %}
   <ul>
-    {% endblock %}
+    {% if user.username == username %}
+    <a href="{% url 'accounts:user_profile_edit' user.pk %}" class="btn btn-info">プロフィール編集</a>
+    {% elif connected %}
+    <a href="{% url 'accounts:unfollow' slug=user.username %}" class="btn btn-dark">フォロー解除</a>
+    {% else %}
+    <a href="{% url 'accounts:follow' user.username %}" class="btn btn-light">フォロー</a>
+    {% endif %}
+{% endblock %}

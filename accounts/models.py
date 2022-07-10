@@ -26,8 +26,11 @@ class Profile(models.Model):
     def __str__(self):
         return str(self.user)
 
-
+# followee=俺がフォローしている人
+# follower=俺をフォローしている人
 # 新ユーザーの作成時に空のprofileも作成する
+
+
 @receiver(post_save, sender=User)
 def user_is_created(sender, instance, created, **kwargs):
     if created:
@@ -35,4 +38,8 @@ def user_is_created(sender, instance, created, **kwargs):
 
 
 class FriendShip(models.Model):
-    pass
+    follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE, null=True)
+    following = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return "{} : {}".format(self.follower.username, self.following.username)

@@ -399,6 +399,12 @@ class TestUserProfileEditView(TestCase):
 
 
 class TestFollowView(TestCase):
+    def setUp(self):
+        User.objects.create_user(
+            username="yamada", email="asaka@test.com", password="wasurenaide1108"
+        )
+        self.client.login(username="yamada", password="wasurenaide1108")
+
     def test_success_post(self):
         pass
 

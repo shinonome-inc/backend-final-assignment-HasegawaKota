@@ -2,16 +2,34 @@
 
 {% block title %}ホーム{% endblock %}
 {% block content %}
-<p>ホームだよん</p>
-<a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-primary">プロフィール閲覧</a>
-<a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
-<a href="{% url 'tweets:create' %}" class="btn btn-primary">ツイート</a>
+<p>
+  <a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-primary">プロフィール</a>
+  <a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
+  <a href="{% url 'tweets:create' %}" class="btn btn-primary">ツイート</a>
+</p>
+{% if messages %}
+<ul>
+  {% for message in messages %}
+  {{ message }}
+  {% endfor %}
+</ul>
+{% endif %}
 
 {% for tweet in tweets_list %}
 <ul>
   {{tweet.created_at}}
-  {{tweet.user}}
-  {{tweet.contents}}
+  
+  {% if request.user != tweet.user %}
+    {% if tweet  in following_list %}
+      <a href="{% url 'accounts:unfollow' tweet.user.username %}" class="btn btn-light">{{ tweet.user }}</a>
+    {% else %}
+      <a href="{% url 'accounts:follow' tweet.user.username %}" class="btn btn-light">{{ tweet.user }}</a>
+    {% endif %}
+  {% else %}
+  <a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-light">{{ tweet.user }}</a>
+  {% endif %}
+
+  <a href="{% url 'tweets:detail' tweet.pk %}" class="btn btn-light">{{tweet.contents}}</a>
 </ul>
 {% endfor %}
 
