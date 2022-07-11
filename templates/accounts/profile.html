@@ -10,8 +10,12 @@
   <li>{% if profile.hobby %}{{profile.hobby}}{% else %}趣味　未設定{% endif %}</li>
   <li>{% if profile.introduction %}{{profile.introduction}}{% else %}自己紹介　未設定{% endif %}</li>
 </ul>
+{% if request.user == tweet.user %}
 <a href="{% url 'accounts:user_profile_edit' user.pk %}" class="btn btn-primary">プロフィール編集したいなら来な！</a>
+{% endif %}
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">ホーム</a>
+<a href="{% url 'accounts:follower_list' user.username %}" class="btn btn-light">フォロワー覧</a>
+<a href="{% url 'accounts:following_list' user.username %}" class="btn btn-light">フォロ一覧</a>
 </p>
 <ul>
   {% for tweet in tweets_list %}
@@ -22,11 +26,10 @@
   </li>
   {% endfor %}
   <ul>
+    
     {% if user.username == username %}
     <a href="{% url 'accounts:user_profile_edit' user.pk %}" class="btn btn-info">プロフィール編集</a>
     {% elif connected %}
     <a href="{% url 'accounts:unfollow' slug=user.username %}" class="btn btn-dark">フォロー解除</a>
-    {% else %}
-    <a href="{% url 'accounts:follow' user.username %}" class="btn btn-light">フォロー</a>
     {% endif %}
 {% endblock %}

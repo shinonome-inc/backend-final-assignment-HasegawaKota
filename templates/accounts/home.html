@@ -15,16 +15,14 @@
 </ul>
 {% endif %}
 
-{% for tweet in tweets_list %}
+{% for tweet in object_list %}
 <ul>
   {{tweet.created_at}}
-  
-  {% if request.user != tweet.user %}
-    {% if tweet  in following_list %}
-      <a href="{% url 'accounts:unfollow' tweet.user.username %}" class="btn btn-light">{{ tweet.user }}</a>
-    {% else %}
-      <a href="{% url 'accounts:follow' tweet.user.username %}" class="btn btn-light">{{ tweet.user }}</a>
-    {% endif %}
+
+  {% if tweet.user in following_list %}
+  <a href="{% url 'accounts:unfollow' tweet.user.username %}" class="btn btn-light">{{ tweet.user }}</a>
+  {% elif request.user != tweet.user %}
+  <a href="{% url 'accounts:follow' tweet.user.username %}" class="btn btn-light">{{ tweet.user }}</a>
   {% else %}
   <a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-light">{{ tweet.user }}</a>
   {% endif %}

@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth import SESSION_KEY
 
-from .models import User, Profile
+from .models import User, Profile, FriendShip
 from tweets.models import Tweet
 from mysite import settings
 
@@ -400,13 +400,24 @@ class TestUserProfileEditView(TestCase):
 
 class TestFollowView(TestCase):
     def setUp(self):
-        User.objects.create_user(
+        self.user = User.objects.create_user(
             username="yamada", email="asaka@test.com", password="wasurenaide1108"
         )
         self.client.login(username="yamada", password="wasurenaide1108")
 
     def test_success_post(self):
-        pass
+
+        response = self.client.post(
+            reverse("accounts:follow", kwargs={"username": "yamada"})
+        )
+        self.assertRedirects(
+            response,
+            reverse("accounts:home"),
+            status_code=302,
+            target_status_code=200,
+            fetch_redirect_response=True,
+        )
+        self.assertTrue(FriendShip.objects.filter(follower=self.user).exists())
 
     def test_failure_post_with_not_exist_user(self):
         pass

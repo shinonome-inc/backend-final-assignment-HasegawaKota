@@ -2,5 +2,9 @@
 
 {% block title %}フォローしている人一覧{% endblock %}
 {% block content %}
-
+<a href="{% url 'accounts:home' %}" class="btn btn-primary">home</a>
+{% for following in following_list %}
+<li>{{ following.follower }}</li>
+{% endfor %}
+some users follow hasegawakota
 {% endblock %}
