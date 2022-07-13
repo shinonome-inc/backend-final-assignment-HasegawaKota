@@ -111,13 +111,7 @@ class FollowView(LoginRequiredMixin, TemplateView):
             following = get_object_or_404(User, username=self.kwargs["username"])
             if follower == following:
                 messages.warning(request, "自分自身はフォローできない")
-                follow_flg = (
-                    FriendShip.objects.select_related("follower", "following")
-                    .filter(follower=self.request.user)
-                    .exists()
-                )
-                context = {"follow_flg": follow_flg}
-                return render(request, "accounts/home.html", context, status=200)
+                return render(request, "accounts/home.html", status=200)
             elif FriendShip.objects.filter(
                 follower=follower, following=following
             ).exists():
