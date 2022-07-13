@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}フォロワー覧{% endblock %}
+{% block title %}フォロワ一覧{% endblock %}
 {% block content %}
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">home</a>
-{% for follower in follower_list %}
-<li>{{ follower.following }}</li>
+<a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-primary">プロフィール</a>
+{% for follow in follower_list %}
+<li>
+    <a href="{% url 'accounts:follow' follow.follower.username %}" class="btn btn-light">{{ follow.follower }}</a>
+</li>
 {% endfor %}
-hasegawakota follow some users
+
 {% endblock %}
