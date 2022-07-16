@@ -19,7 +19,7 @@
 <ul>
   {{tweet.created_at}}
   {% if request.user != tweet.user %}
-  <a href="{% url 'accounts:follow' tweet.user.username %}" class="btn btn-light">{{ tweet.user }}</a>
+  <a href="{% url 'accounts:user_profile' pk=tweet.user.pk %}" class="btn btn-light">{{ tweet.user }}</a>
   {% else %}
   <a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-light">{{ tweet.user }}</a>
   {% endif %}
