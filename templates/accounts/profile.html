@@ -5,16 +5,17 @@
 {% block content %}
 <p>
 <ul>
-  <li>{{ user.username }}</li>
-  <li>{{ user.email }}</li>
+  <li>{{ profile.user.username }}</li>
+  <li>{{ profile.user.email }}</li>
   <li>{% if profile.hobby %}{{profile.hobby}}{% else %}趣味　未設定{% endif %}</li>
   <li>{% if profile.introduction %}{{profile.introduction}}{% else %}自己紹介　未設定{% endif %}</li>
 </ul>
 
-<a href="{% url 'accounts:user_profile_edit' user.pk %}" class="btn btn-primary">プロフィール編集したいなら来な！</a>
+<a href="{% url 'accounts:user_profile_edit' user.pk %}" class="btn btn-primary">プロフィール編集</a>
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">ホーム</a>
-<a href="{% url 'accounts:follower_list' user.username %}" class="btn btn-light">{{follower_list}}人：フォロワー覧</a>
-<a href="{% url 'accounts:following_list' user.username %}" class="btn btn-light">{{following_list}}人：フォロ一覧</a>
+<a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
+<a href="{% url 'accounts:follower_list' user.username %}" class="btn btn-light">{{follower_count}}人：フォロワー覧</a>
+<a href="{% url 'accounts:following_list' user.username %}" class="btn btn-light">{{following_count}}人：フォロ一覧</a>
 </p>
 <ul>
   {% for tweet in tweets_list %}

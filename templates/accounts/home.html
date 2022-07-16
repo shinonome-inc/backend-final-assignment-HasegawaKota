@@ -18,7 +18,6 @@
 {% for tweet in object_list %}
 <ul>
   {{tweet.created_at}}
-
   {% if request.user != tweet.user %}
   <a href="{% url 'accounts:follow' tweet.user.username %}" class="btn btn-light">{{ tweet.user }}</a>
   {% else %}

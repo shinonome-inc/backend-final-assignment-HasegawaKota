@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}プロフィール閲覧{% endblock %}
+{% block title %}始まり{% endblock %}
 
 {% block content %}
 <h1>Backend Final Assignment</h1>
+<a href="{% url 'accounts:login' %}" class="btn btn-primary">ログイン</a>
+<a href="{% url 'accounts:signup' %}" class="btn btn-primary">サインアップ</a>
 {% endblock %}

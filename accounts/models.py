@@ -40,11 +40,9 @@ def user_is_created(sender, instance, created, **kwargs):
 
 class FriendShip(models.Model):
     follower = models.ForeignKey(
-        User, related_name="follower", on_delete=models.CASCADE, null=True
-    )
+        User, related_name="follower", on_delete=models.CASCADE)
     following = models.ForeignKey(
-        User, related_name="following", on_delete=models.CASCADE, null=True
-    )
+        User, related_name="following", on_delete=models.CASCADE,)
 
     def __str__(self):
-        return "{} : {}".format(self.follower.username, self.following.username)
+        return f"{self.follower.username} : {self.following.username}"

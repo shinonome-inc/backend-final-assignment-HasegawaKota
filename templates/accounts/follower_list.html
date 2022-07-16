@@ -3,11 +3,16 @@
 {% block title %}フォロワ一覧{% endblock %}
 {% block content %}
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">home</a>
-<a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-primary">プロフィール</a>
+<a href="{% url 'accounts:user_profile' pk=user.profile.pk %}" class="btn btn-primary">プロフィール</a>
+<a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
 {% for follow in follower_list %}
-<li>
-    <a href="{% url 'accounts:follow' follow.follower.username %}" class="btn btn-light">{{ follow.follower }}</a>
-</li>
+
+
+<form action="{% url 'accounts:follow' follow.follower.username %}" method="POST">
+    {% csrf_token %}
+    <button class="btn btn-light" type="submit">{{ follow.follower }}</button>
+</form>
+
 {% endfor %}
 
 {% endblock %}

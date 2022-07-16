@@ -4,10 +4,13 @@
 {% block content %}
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">home</a>
 <a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-primary">プロフィール</a>
+<a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
 {% for follow in following_list %}
-<li>
-    <a href="{% url 'accounts:unfollow' follow.following.username %}" class="btn btn-light">{{ follow.following }}</a>
-</li>
+{if}
+<form action="{% url 'accounts:unfollow' follow.following.username %}" method="POST">
+    {% csrf_token %}
+    <button class="btn btn-light" type="submit">{{ follow.following }}</button>
+</form>
 {% endfor %}
 
 {% endblock %}
