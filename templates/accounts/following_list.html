@@ -6,10 +6,9 @@
 <a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-primary">プロフィール</a>
 <a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
 {% for follow in following_list %}
-{if}
 <form action="{% url 'accounts:unfollow' follow.following.username %}" method="POST">
     {% csrf_token %}
-    <button class="btn btn-light" type="submit">{{ follow.following }}</button>
+    <button class="btn btn-light" type="submit">{{ follow.following }}のフォロー解除</button>
 </form>
 {% endfor %}
 

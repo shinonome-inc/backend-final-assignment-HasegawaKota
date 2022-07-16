@@ -10,7 +10,7 @@
 
 <form action="{% url 'accounts:follow' follow.follower.username %}" method="POST">
     {% csrf_token %}
-    <button class="btn btn-light" type="submit">{{ follow.follower }}</button>
+    <button class="btn btn-light" type="submit">{{ follow.follower }}をフォロー</button>
 </form>
 
 {% endfor %}

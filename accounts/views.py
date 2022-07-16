@@ -1,7 +1,5 @@
-import profile
-from webbrowser import get
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import (
@@ -121,9 +119,9 @@ class FollowView(LoginRequiredMixin, View):
             messages.warning(request, "指定のユーザーは存在しません")
             raise Http404
 
-#まだViewのアンフォローは実装していません。
-class UnFollowView(LoginRequiredMixin, TemplateView):
-    template_name = "accounts/unfollow.html"
+
+class UnFollowView(LoginRequiredMixin, View):
+    # template_name = "accounts/unfollow.html"
 
     def post(self, request, *args, **kwargs):
         try:
@@ -154,9 +152,9 @@ class FollowerListView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["follower_list"] = FriendShip.objects.select_related(
-            "follower", "following"
-        ).filter(following=self.request.user)
+        context["follower_list"] = FriendShip.objects.select_related("follower").filter(
+            following=self.request.user
+        )
         return context
 
 
@@ -166,6 +164,6 @@ class FollowingListView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context["following_list"] = FriendShip.objects.select_related(
-            "follower", "following"
+            "following"
         ).filter(follower=self.request.user)
         return context
