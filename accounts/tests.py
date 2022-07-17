@@ -532,9 +532,9 @@ class TestFollowingListView(TestCase):
             username="yamada", email="asaka@test.com", password="wasurenaide1108"
         )
         self.client.login(username="yamada", password="wasurenaide1108")
-
+        user = User.objects.get(username="yamada")
         response = self.client.get(
-            reverse("accounts:following_list", kwargs={"username": "yamada"})
+            reverse("accounts:following_list", kwargs={"pk": user.pk})
         )
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/following_list.html")
@@ -545,13 +545,10 @@ class TestFollowerListView(TestCase):
         self.user1 = User.objects.create_user(
             username="yamada", email="asaka@test.com", password="wasurenaide1108"
         )
-        self.user2 = User.objects.create_user(
-            username="satou", email="asaka@test.com", password="wasurenaide1111"
-        )
         self.client.login(username="yamada", password="wasurenaide1108")
-
+        user = User.objects.get(username="yamada")
         response = self.client.get(
-            reverse("accounts:follower_list", kwargs={"username": "yamada"})
+            reverse("accounts:follower_list", kwargs={"pk": user.pk})
         )
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/follower_list.html")

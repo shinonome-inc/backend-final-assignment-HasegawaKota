@@ -52,23 +52,24 @@ class UserProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["tweets_list"] = Tweet.objects.select_related("user").filter()
+        user = self.object.user
+        context["tweets_list"] = Tweet.objects.select_related("user").filter(user=user)
         context["following_count"] = (
             FriendShip.objects.select_related("follower", "following")
-            .filter(follower=self.request.user)
+            .filter(follower=user)
             .count()
         )
         context["follower_count"] = (
             FriendShip.objects.select_related("follower", "following")
-            .filter(following=self.request.user)
+            .filter(following=user)
             .count()
         )
         context["following_list"] = FriendShip.objects.select_related(
             "follower", "following"
-        ).filter(follower=self.request.user)
+        ).filter(follower=user)
         context["follower_list"] = FriendShip.objects.select_related(
             "follower", "following"
-        ).filter(following=self.request.user)
+        ).filter(following=user)
 
         return context
 
@@ -90,7 +91,6 @@ class UserProfileEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class HomeView(LoginRequiredMixin, ListView):
     model = Tweet
     template_name = "accounts/home.html"
-    paginate_by = 20
     context_object_name = "tweets_list"
 
     def get_queryset(self):
@@ -102,7 +102,6 @@ class WelcomeView(TemplateView):
 
 
 class FollowView(LoginRequiredMixin, View):
-    # template_name = "accounts/follow.html"
 
     def post(self, request, *args, **kwargs):
         try:
@@ -120,14 +119,14 @@ class FollowView(LoginRequiredMixin, View):
                 FriendShip.objects.get_or_create(follower=follower, following=following)
                 messages.info(request, f"あなたは{following.username}をフォローしました")
 
-            return HttpResponseRedirect(reverse_lazy("accounts:home"))
+            # return HttpResponseRedirect(reverse("accounts:home"))
         except User.DoesNotExist:
             messages.warning(request, "指定のユーザーは存在しません")
             raise Http404
+        return HttpResponseRedirect(reverse("accounts:home"))
 
 
 class UnFollowView(LoginRequiredMixin, View):
-    # template_name = "accounts/unfollow.html"
 
     def post(self, request, *args, **kwargs):
         try:
@@ -153,23 +152,27 @@ class UnFollowView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse("accounts:home"))
 
 
-class FollowerListView(LoginRequiredMixin, TemplateView):
+class FollowerListView(LoginRequiredMixin, DetailView):
     template_name = "accounts/follower_list.html"
+    model = Profile
 
     def get_context_data(self, *args, **kwargs):
+        user = self.object.user
         context = super().get_context_data(*args, **kwargs)
         context["follower_list"] = FriendShip.objects.select_related("follower").filter(
-            following=self.request.user
+            following=user
         )
         return context
 
 
-class FollowingListView(LoginRequiredMixin, TemplateView):
+class FollowingListView(LoginRequiredMixin, DetailView):
     template_name = "accounts/following_list.html"
+    model = Profile
 
     def get_context_data(self, *args, **kwargs):
+        user = self.object.user
         context = super().get_context_data(*args, **kwargs)
         context["following_list"] = FriendShip.objects.select_related(
             "following"
-        ).filter(follower=self.request.user)
+        ).filter(follower=user)
         return context

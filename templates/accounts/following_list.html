@@ -3,7 +3,7 @@
 {% block title %}フォロー覧{% endblock %}
 {% block content %}
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">home</a>
-<a href="{% url 'accounts:user_profile' pk=user.pk %}" class="btn btn-primary">プロフィール</a>
+<a href="{% url 'accounts:user_profile' pk=user.profile.pk %}" class="btn btn-primary">プロフィール</a>
 <a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
 {% for follow in following_list %}
 <form action="{% url 'accounts:unfollow' follow.following.username %}" method="POST">
