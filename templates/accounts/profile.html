@@ -13,6 +13,22 @@
 {% if request.user.username == profile.user.username %}
 <a href="{% url 'accounts:user_profile_edit' user.pk %}" class="btn btn-primary">プロフィール編集</a>
 {% endif %}
+
+
+
+{% if profile.user in following_list %}
+<form action="{% url 'accounts:unfollow' profile.user.username %}" method="POST">
+    {% csrf_token %}
+    <button class="btn btn-light" type="submit">{{ profile.user.usermname }}のフォロー解除</button>
+</form>
+{% else %}
+<form action="{% url 'accounts:follow' profile.user.username %}" method="POST">
+  {% csrf_token %}
+  <button class="btn btn-light" type="submit">{{ profile.user.username }}をフォロー</button>
+</form>
+{% endif %}
+
+
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">ホーム</a>
 <a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
 <a href="{% url 'accounts:follower_list' profile.user.username %}" class="btn btn-light">{{follower_count}}人：フォロワー覧</a>

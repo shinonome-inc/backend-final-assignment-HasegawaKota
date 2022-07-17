@@ -63,6 +63,12 @@ class UserProfileView(LoginRequiredMixin, DetailView):
             .filter(following=self.request.user)
             .count()
         )
+        context["following_list"] = FriendShip.objects.select_related(
+            "follower", "following"
+        ).filter(follower=self.request.user)
+        context["follower_list"] = FriendShip.objects.select_related(
+            "follower", "following"
+        ).filter(following=self.request.user)
 
         return context
 
