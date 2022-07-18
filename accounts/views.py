@@ -64,12 +64,9 @@ class UserProfileView(LoginRequiredMixin, DetailView):
             .filter(following=user)
             .count()
         )
-        context["following_list"] = FriendShip.objects.select_related(
+        context["flag"] = FriendShip.objects.select_related(
             "follower", "following"
-        ).filter(follower=user)
-        context["follower_list"] = FriendShip.objects.select_related(
-            "follower", "following"
-        ).filter(following=user)
+        ).filter(follower=self.request.user, following=user).exists()
 
         return context
 
@@ -104,8 +101,8 @@ class WelcomeView(TemplateView):
 class FollowView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
+        follower = self.request.user
         try:
-            follower = self.request.user
             following = User.objects.get(username=self.kwargs["username"])
             if follower == following:
                 messages.warning(request, "自分自身はフォローできない")
@@ -119,7 +116,6 @@ class FollowView(LoginRequiredMixin, View):
                 FriendShip.objects.get_or_create(follower=follower, following=following)
                 messages.info(request, f"あなたは{following.username}をフォローしました")
 
-            # return HttpResponseRedirect(reverse("accounts:home"))
         except User.DoesNotExist:
             messages.warning(request, "指定のユーザーは存在しません")
             raise Http404
@@ -129,8 +125,8 @@ class FollowView(LoginRequiredMixin, View):
 class UnFollowView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
+        follower = self.request.user
         try:
-            follower = self.request.user
             following = User.objects.get(username=self.kwargs["username"])
             if follower == following:
                 messages.warning(request, "自分自身のフォローを外せません")

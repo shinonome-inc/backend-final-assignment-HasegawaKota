@@ -16,19 +16,18 @@
 
 
 {% if profile.user != request.user %}
-{% if profile.user in following_list %}
+{% if flag %}
 <form action="{% url 'accounts:unfollow' profile.user.username %}" method="POST">
-    {% csrf_token %}
-    <button class="btn btn-light" type="submit">{{ profile.user.usermname }}のフォロー解除</button>
+  {% csrf_token %}
+  <button class="btn btn-light" type="submit">{{profile.user.username}}のフォロー解除</button>
 </form>
 {% else %}
 <form action="{% url 'accounts:follow' profile.user.username %}" method="POST">
   {% csrf_token %}
-  <button class="btn btn-light" type="submit">{{ profile.user.username }}をフォロー</button>
+  <button class="btn btn-light" type="submit">{{profile.user.username}}をフォロー</button>
 </form>
 {% endif %}
 {% endif %}
-
 
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">ホーム</a>
 <a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
