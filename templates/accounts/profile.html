@@ -29,8 +29,7 @@
 {% endif %}
 {% endif %}
 
-<a href="{% url 'accounts:home' %}" class="btn btn-primary">ホーム</a>
-<a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
+
 <a href="{% url 'accounts:follower_list' profile.user.pk %}" class="btn btn-light">{{follower_count}}人：フォロワー覧</a>
 <a href="{% url 'accounts:following_list' profile.user.pk %}" class="btn btn-light">{{following_count}}人：フォロ一覧</a>
 </p>

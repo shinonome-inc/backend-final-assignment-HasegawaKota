@@ -50,6 +50,9 @@ class UserProfileView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = "accounts/profile.html"
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("user")
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         user = self.object.user
@@ -152,6 +155,9 @@ class FollowerListView(LoginRequiredMixin, DetailView):
     template_name = "accounts/follower_list.html"
     model = Profile
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("user")
+
     def get_context_data(self, *args, **kwargs):
         user = self.object.user
         context = super().get_context_data(*args, **kwargs)
@@ -164,6 +170,9 @@ class FollowerListView(LoginRequiredMixin, DetailView):
 class FollowingListView(LoginRequiredMixin, DetailView):
     template_name = "accounts/following_list.html"
     model = Profile
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("user")
 
     def get_context_data(self, *args, **kwargs):
         user = self.object.user
