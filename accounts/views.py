@@ -57,16 +57,8 @@ class UserProfileView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(*args, **kwargs)
         user = self.object.user
         context["tweets_list"] = Tweet.objects.select_related("user").filter(user=user)
-        context["following_count"] = (
-            FriendShip.objects.select_related("follower", "following")
-            .filter(follower=user)
-            .count()
-        )
-        context["follower_count"] = (
-            FriendShip.objects.select_related("follower", "following")
-            .filter(following=user)
-            .count()
-        )
+        context["following_count"] = FriendShip.objects.filter(follower=user).count()
+        context["follower_count"] = FriendShip.objects.filter(following=user).count()
         context["follow_relationship"] = (
             FriendShip.objects.select_related("follower", "following")
             .filter(follower=self.request.user, following=user)
