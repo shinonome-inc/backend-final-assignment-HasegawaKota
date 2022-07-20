@@ -1,4 +1,7 @@
+from django.contrib import messages
+from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import (
     TemplateView,
     CreateView,
@@ -9,8 +12,9 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
+from django.http import Http404, HttpResponseRedirect
 
-from .models import User, Profile
+from .models import User, Profile, FriendShip
 from tweets.models import Tweet
 from .forms import SignupForm, LoginForm, ProfileForm
 
@@ -44,14 +48,23 @@ class Logout(LoginRequiredMixin, LogoutView):
 
 class UserProfileView(LoginRequiredMixin, DetailView):
     model = Profile
-    # context_object_name = 'profile_list'
     template_name = "accounts/profile.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("user")
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["tweet_list"] = Tweet.objects.select_related("user").filter(
-            user=self.request.user
+        user = self.object.user
+        context["tweets_list"] = Tweet.objects.select_related("user").filter(user=user)
+        context["following_count"] = FriendShip.objects.filter(follower=user).count()
+        context["follower_count"] = FriendShip.objects.filter(following=user).count()
+        context["has_following_connection"] = (
+            FriendShip.objects.select_related("follower", "following")
+            .filter(follower=self.request.user, following=user)
+            .exists()
         )
+
         return context
 
 
@@ -72,7 +85,6 @@ class UserProfileEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class HomeView(LoginRequiredMixin, ListView):
     model = Tweet
     template_name = "accounts/home.html"
-    paginate_by = 20
     context_object_name = "tweets_list"
 
     def get_queryset(self):
@@ -81,3 +93,77 @@ class HomeView(LoginRequiredMixin, ListView):
 
 class WelcomeView(TemplateView):
     template_name = "welcome/index.html"
+
+
+class FollowView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        follower = self.request.user
+        try:
+            following = User.objects.get(username=self.kwargs["username"])
+
+        except User.DoesNotExist:
+            messages.warning(request, "指定のユーザーは存在しません")
+            raise Http404
+
+        if follower == following:
+            messages.warning(request, "自分自身はフォローできない")
+            return render(request, "accounts/home.html", status=200)
+        elif FriendShip.objects.filter(follower=follower, following=following).exists():
+            messages.warning(request, f"{following.username}は既にフォローしてるだろ！！！！")
+            return render(request, "accounts/home.html", status=200)
+        else:
+            FriendShip.objects.get_or_create(follower=follower, following=following)
+            messages.info(request, f"あなたは{following.username}をフォローしました")
+        return HttpResponseRedirect(reverse("accounts:home"))
+
+
+class UnFollowView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        follower = self.request.user
+        try:
+            following = User.objects.get(username=self.kwargs["username"])
+        except User.DoesNotExist:
+            messages.warning(request, "指定のユーザーは存在しません")
+            raise Http404
+
+        if follower == following:
+            messages.warning(request, "自分自身のフォローを外せません")
+            return render(request, "accounts/home.html", status=200)
+        elif FriendShip.objects.filter(follower=follower, following=following).exists():
+            FriendShip.objects.filter(follower=follower, following=following).delete()
+            messages.success(request, f"あなたは{following.username}のフォローを外しました")
+        else:
+            messages.warning(request, f"もともと{following.username}をフォローをしてねえから。わかったかクソガキ")
+        return HttpResponseRedirect(reverse("accounts:home"))
+
+
+class FollowerListView(LoginRequiredMixin, DetailView):
+    template_name = "accounts/follower_list.html"
+    model = Profile
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("user")
+
+    def get_context_data(self, *args, **kwargs):
+        user = self.object.user
+        context = super().get_context_data(*args, **kwargs)
+        context["follower_list"] = FriendShip.objects.select_related("follower").filter(
+            following=user
+        )
+        return context
+
+
+class FollowingListView(LoginRequiredMixin, DetailView):
+    template_name = "accounts/following_list.html"
+    model = Profile
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("user")
+
+    def get_context_data(self, *args, **kwargs):
+        user = self.object.user
+        context = super().get_context_data(*args, **kwargs)
+        context["following_list"] = FriendShip.objects.select_related(
+            "following"
+        ).filter(follower=user)
+        return context

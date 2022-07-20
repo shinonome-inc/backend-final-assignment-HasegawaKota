@@ -21,8 +21,15 @@
       {% block header %}
       {% endblock header %}
     </h1>
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'accounts:user_profile' pk=user.profile.pk %}" class="btn btn-primary">プロフィール</a>
+    <a href="{% url 'accounts:logout' %}" class="btn btn-primary">ログアウト</a>
+    <a href="{% url 'tweets:create' %}" class="btn btn-primary">ツイート</a>
+    <a href="{% url 'accounts:home' %}" class="btn btn-primary">home</a>
+    {% endif %}
     {% block content %}
     {% endblock content %}
+
   </div>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

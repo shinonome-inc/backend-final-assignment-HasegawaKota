@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}unfollow{% endblock %}
+{% block content %}
+{{ username }}のフォローを外しますか
+<form action="" method="POST">
+    {% csrf_token %}
+
+    <button type="submit" class="btn btn-primary">unfollow</button>
+</form>
+<a href="{% url 'accounts:home' %}" class="btn btn-primary">キャンセル</a>
+{% endblock %}
