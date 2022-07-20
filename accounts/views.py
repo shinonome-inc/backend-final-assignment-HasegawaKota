@@ -59,7 +59,7 @@ class UserProfileView(LoginRequiredMixin, DetailView):
         context["tweets_list"] = Tweet.objects.select_related("user").filter(user=user)
         context["following_count"] = FriendShip.objects.filter(follower=user).count()
         context["follower_count"] = FriendShip.objects.filter(following=user).count()
-        context["follow_relationship_is_true"] = (
+        context["has_following_connection"] = (
             FriendShip.objects.select_related("follower", "following")
             .filter(follower=self.request.user, following=user)
             .exists()
