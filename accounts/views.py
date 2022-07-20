@@ -109,7 +109,7 @@ class FollowView(LoginRequiredMixin, View):
             messages.warning(request, "自分自身はフォローできない")
             return render(request, "accounts/home.html", status=200)
         elif FriendShip.objects.filter(follower=follower, following=following).exists():
-            messages.success(request, f"{following.username}は既にフォローしてるだろ！！！！")
+            messages.warning(request, f"{following.username}は既にフォローしてるだろ！！！！")
             return render(request, "accounts/home.html", status=200)
         else:
             FriendShip.objects.get_or_create(follower=follower, following=following)
