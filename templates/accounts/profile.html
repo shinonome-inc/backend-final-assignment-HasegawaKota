@@ -16,7 +16,7 @@
 
 
 {% if profile.user != request.user %}
-{% if follow_relationship %}
+{% if follow_relationship_is_true %}
 <form action="{% url 'accounts:unfollow' profile.user.username %}" method="POST">
   {% csrf_token %}
   <button class="btn btn-light" type="submit">{{profile.user.username}}のフォロー解除</button>
