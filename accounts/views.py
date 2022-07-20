@@ -67,9 +67,11 @@ class UserProfileView(LoginRequiredMixin, DetailView):
             .filter(following=user)
             .count()
         )
-        context["flag"] = FriendShip.objects.select_related(
-            "follower", "following"
-        ).filter(follower=self.request.user, following=user).exists()
+        context["follow_relationship"] = (
+            FriendShip.objects.select_related("follower", "following")
+            .filter(follower=self.request.user, following=user)
+            .exists()
+        )
 
         return context
 
@@ -102,52 +104,44 @@ class WelcomeView(TemplateView):
 
 
 class FollowView(LoginRequiredMixin, View):
-
     def post(self, request, *args, **kwargs):
         follower = self.request.user
         try:
             following = User.objects.get(username=self.kwargs["username"])
-            if follower == following:
-                messages.warning(request, "自分自身はフォローできない")
-                return render(request, "accounts/home.html", status=200)
-            elif FriendShip.objects.filter(
-                follower=follower, following=following
-            ).exists():
-                messages.success(request, f"{following.username}は既にフォローしてるだろ！！！！")
-                return render(request, "accounts/home.html", status=200)
-            else:
-                FriendShip.objects.get_or_create(follower=follower, following=following)
-                messages.info(request, f"あなたは{following.username}をフォローしました")
 
         except User.DoesNotExist:
             messages.warning(request, "指定のユーザーは存在しません")
             raise Http404
+
+        if follower == following:
+            messages.warning(request, "自分自身はフォローできない")
+            return render(request, "accounts/home.html", status=200)
+        elif FriendShip.objects.filter(follower=follower, following=following).exists():
+            messages.success(request, f"{following.username}は既にフォローしてるだろ！！！！")
+            return render(request, "accounts/home.html", status=200)
+        else:
+            FriendShip.objects.get_or_create(follower=follower, following=following)
+            messages.info(request, f"あなたは{following.username}をフォローしました")
         return HttpResponseRedirect(reverse("accounts:home"))
 
 
 class UnFollowView(LoginRequiredMixin, View):
-
     def post(self, request, *args, **kwargs):
         follower = self.request.user
         try:
             following = User.objects.get(username=self.kwargs["username"])
-            if follower == following:
-                messages.warning(request, "自分自身のフォローを外せません")
-                return render(request, "accounts/home.html", status=200)
-            elif FriendShip.objects.filter(
-                follower=follower, following=following
-            ).exists():
-                FriendShip.objects.filter(
-                    follower=follower, following=following
-                ).delete()
-                messages.success(request, f"あなたは{following.username}のフォローを外しました")
-            else:
-                messages.warning(
-                    request, f"もともと{following.username}をフォローをしてねえから。わかったかクソガキ"
-                )
         except User.DoesNotExist:
             messages.warning(request, "指定のユーザーは存在しません")
             raise Http404
+
+        if follower == following:
+            messages.warning(request, "自分自身のフォローを外せません")
+            return render(request, "accounts/home.html", status=200)
+        elif FriendShip.objects.filter(follower=follower, following=following).exists():
+            FriendShip.objects.filter(follower=follower, following=following).delete()
+            messages.success(request, f"あなたは{following.username}のフォローを外しました")
+        else:
+            messages.warning(request, f"もともと{following.username}をフォローをしてねえから。わかったかクソガキ")
         return HttpResponseRedirect(reverse("accounts:home"))
 
 
