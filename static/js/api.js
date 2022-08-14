@@ -20,7 +20,7 @@ document.getElementById('like-for-post').addEventListener('click', e => {
         body: `tweet_pk={{tweet.pk}}`,
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-            'X-CSRFToken': '{{ csrf_token }}',
+            'X-CSRFToken': csrftoken,
         },
     }).then(response => {
         return response.json();
