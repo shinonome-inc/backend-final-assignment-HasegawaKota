@@ -15,7 +15,7 @@ from django.contrib.auth import authenticate, login
 from django.http import Http404, HttpResponseRedirect
 
 from .models import User, Profile, FriendShip
-from tweets.models import Tweet
+from tweets.models import Like, Tweet
 from .forms import SignupForm, LoginForm, ProfileForm
 
 

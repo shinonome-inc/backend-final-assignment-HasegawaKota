@@ -1,10 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, DeleteView
-from django.http import Http404
+from django.http import Http404, JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
 from .forms import TweetForm
-from .models import Tweet
+from .models import Like, Tweet
 
 # Create your views here.
 
@@ -26,6 +28,18 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     model = Tweet
     template_name = "tweets/tweets_detail.html"
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        user = self.request.user
+        context["like_for_tweet_count"] = Like.objects.filter(user=user).count()
+        context["has_like_connection"] = Like.objects.filter(user=user).exists()
+        if self.object.like_set.filter(user=self.request.user).exists():
+            context["is_user_liked_for_tweet"] = True
+        else:
+            context["is_user_liked_for_tweet"] = False
+
+        return context
+
 
 class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Tweet
@@ -39,3 +53,31 @@ class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return current_user == tweet_user
         else:
             return Http404
+
+
+@login_required
+def LikeView(request, pk, *args, **kwargs):
+    tweet = get_object_or_404(Tweet, pk=pk)
+    Like.objects.get_or_create(user=request.user, tweet=tweet)
+    context = {
+        "method": "create",
+        "like_for_tweet_count": tweet.like_set.count(),
+        "tweet_pk": tweet.pk,
+    }
+
+    return JsonResponse(context)
+
+
+@login_required
+def UnlikeView(request, pk, *args, **kwargs):
+    tweet = get_object_or_404(Tweet, pk=pk)
+    like = Like.objects.get_or_create(user=request.user, tweet=tweet)
+    if like.exists():
+        like.delete()
+        context = {
+            "method": "create",
+            "like_for_tweet_count": tweet.like_set.count(),
+            "tweet_pk": tweet.pk,
+        }
+
+    return JsonResponse(context)
