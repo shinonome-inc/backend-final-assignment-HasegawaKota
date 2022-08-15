@@ -1,15 +1,15 @@
 {% if is_user_liked_for_tweet %}
-<button type="button" id="like-for-tweet">
+<button type="button" id="fetch-like-for-tweet" title="いいねボタン">
     <!-- すでにイイねしている時はfasクラス -->
     <i class="fas fa-heart text-danger" id="like-for-tweet-icon"></i>
 </button>
 {% else %}
-<button type="button" id="like-for-tweet">
+<button type="button" id="fetch-like-for-tweet" title="いいねボタン">
     <!-- イイねしていないときはfarクラス -->
     <i class="far fa-heart text-danger" id="like-for-tweet-icon"></i>
 </button>
 {% endif %}
 <!-- イイねの数 -->
 <span id="like-for-tweet-count">{{ like_for_tweet_count }}</span>
-<span>件のイイね</span>
+<span>件のいいね</span>
 </div>

@@ -31,13 +31,13 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         user = self.request.user
-        context["like_for_tweet_count"] = Like.objects.filter(user=user).count()
+        like_for_tweet_count = self.object.like_set.count()
+        context["like_for_tweet_count"] = like_for_tweet_count
         context["has_like_connection"] = Like.objects.filter(user=user).exists()
         if self.object.like_set.filter(user=self.request.user).exists():
             context["is_user_liked_for_tweet"] = True
         else:
             context["is_user_liked_for_tweet"] = False
-
         return context
 
 
@@ -57,7 +57,8 @@ class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 @login_required
 def LikeView(request, pk, *args, **kwargs):
-    tweet = get_object_or_404(Tweet, pk=pk)
+    tweet_pk = request.POST.get('tweet_pk')
+    tweet = get_object_or_404(Tweet, pk=tweet_pk)
     Like.objects.get_or_create(user=request.user, tweet=tweet)
     context = {
         "method": "create",
@@ -70,7 +71,8 @@ def LikeView(request, pk, *args, **kwargs):
 
 @login_required
 def UnlikeView(request, pk, *args, **kwargs):
-    tweet = get_object_or_404(Tweet, pk=pk)
+    tweet_pk = request.POST.get('tweet_pk')
+    tweet = get_object_or_404(Tweet, pk=tweet_pk)
     like = Like.objects.get_or_create(user=request.user, tweet=tweet)
     if like.exists():
         like.delete()
