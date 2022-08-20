@@ -33,8 +33,7 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
         user = self.request.user
         like_for_tweet_count = self.object.like_set.count()
         context["like_for_tweet_count"] = like_for_tweet_count
-        context["has_like_connection"] = Like.objects.filter(user=user).exists()
-        if self.object.like_set.filter(user=self.request.user).exists():
+        if self.object.like_set.filter(user=user).exists():
             context["is_user_liked_for_tweet"] = True
         else:
             context["is_user_liked_for_tweet"] = False
@@ -60,10 +59,12 @@ def LikeView(request, pk, *args, **kwargs):
     tweet_pk = request.POST.get('tweet_pk')
     tweet = get_object_or_404(Tweet, pk=tweet_pk)
     Like.objects.get_or_create(user=request.user, tweet=tweet)
+    liked = True
     context = {
         "method": "create",
         "like_for_tweet_count": tweet.like_set.count(),
         "tweet_pk": tweet.pk,
+        "liked": liked
     }
 
     return JsonResponse(context)
@@ -74,12 +75,14 @@ def UnlikeView(request, pk, *args, **kwargs):
     tweet_pk = request.POST.get('tweet_pk')
     tweet = get_object_or_404(Tweet, pk=tweet_pk)
     like = Like.objects.get_or_create(user=request.user, tweet=tweet)
+    liked = False
     if like.exists():
         like.delete()
         context = {
-            "method": "create",
+            "method": "delete",
             "like_for_tweet_count": tweet.like_set.count(),
             "tweet_pk": tweet.pk,
+            "liked": liked
         }
 
     return JsonResponse(context)

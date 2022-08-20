@@ -6,7 +6,7 @@
 <ul>
   <li>{{ tweet.user }}</li>
   <l1>{% if tweet.created_at %}{{ tweet.created_at }}{% endif %}</li>
-  <li>{% if tweet.contents %}{{ tweet.contents }}{% endif %}</li>
+    <li>{% if tweet.contents %}{{ tweet.contents }}{% endif %}</li>
 </ul>
 <a href="{% url 'accounts:home' %}" class="btn btn-primary">ツイートトップページ</a>
 <a href="{% url 'tweets:delete' tweet.pk %}" class="btn btn-primary">削除する</a>
@@ -29,9 +29,12 @@
 
   const csrftoken = getCookie('csrftoken');
 
+
   document.getElementById('fetch-like-for-tweet').addEventListener('click', e => {
     e.preventDefault();
-    const url = '{% url "tweets:like" tweet.pk %}';
+    let url = ""
+
+    url = '{% url "tweets:like" tweet.pk %}';
     fetch(url, {
       method: 'POST',
       body: `tweet_pk={{tweet.pk}}`,
@@ -42,11 +45,11 @@
     }).then(response => {
       return response.json();
     }).then(response => {
-      // イイね数を書き換える
+
       const counter = document.getElementById('like-for-tweet-count')
       counter.textContent = response.like_for_tweet_count
       const icon = document.getElementById('like-for-tweet-icon')
-      // 作成した場合はハートを塗る
+
       if (response.method == 'create') {
         icon.classList.remove('far')
         icon.classList.add('fas')

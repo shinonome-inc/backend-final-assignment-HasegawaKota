@@ -109,10 +109,19 @@ class TestTweetDeleteView(TestCase):
 
 
 class TestFavoriteView(TestCase):
+    def setUp(self):
+        User.objects.create_user(
+            username="yamada", email="asaka@test.com", password="wasurenaide1108"
+        )
+        self.client.login(username="yamada", password="wasurenaide1108")
+        data = {"contents": "ワンピースの映画早く見たい"}
+        self.client.post(reverse("tweets:create"), data)
+
     def test_success_post(self):
         pass
 
     def test_failure_post_with_not_exist_tweet(self):
+        # 存在しないツイートに対してリクエストを送信する
         pass
 
     def test_failure_post_with_favorited_tweet(self):
