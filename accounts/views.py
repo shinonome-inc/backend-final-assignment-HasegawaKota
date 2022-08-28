@@ -90,6 +90,15 @@ class HomeView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Tweet.objects.all().select_related("user")
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        user = self.request.user
+
+        context["liked_list"] = Like.objects.filter(user=user).values_list(
+            "tweet", flat=True
+        )
+        return context
+
 
 class WelcomeView(TemplateView):
     template_name = "welcome/index.html"
@@ -100,7 +109,6 @@ class FollowView(LoginRequiredMixin, View):
         follower = self.request.user
         try:
             following = User.objects.get(username=self.kwargs["username"])
-
         except User.DoesNotExist:
             messages.warning(request, "指定のユーザーは存在しません")
             raise Http404
