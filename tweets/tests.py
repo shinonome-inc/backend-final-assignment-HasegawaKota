@@ -1,8 +1,9 @@
+from importlib.resources import contents
 from django.test import TestCase
 from django.urls import reverse
 
 from accounts.models import User
-from .models import Tweet
+from .models import Like, Tweet
 
 
 class TestTweetCreateView(TestCase):
@@ -110,12 +111,10 @@ class TestTweetDeleteView(TestCase):
 
 class TestFavoriteView(TestCase):
     def setUp(self):
-        User.objects.create_user(
+        self.user_1 = User.objects.create_user(
             username="yamada", email="asaka@test.com", password="wasurenaide1108"
         )
         self.client.login(username="yamada", password="wasurenaide1108")
-        data = {"contents": "ワンピースの映画早く見たい"}
-        self.client.post(reverse("tweets:create"), data)
 
     def test_success_post(self):
         pass

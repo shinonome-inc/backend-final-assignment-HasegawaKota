@@ -42,19 +42,21 @@
 
   const csrftoken = getCookie('csrftoken');
 
-  document.getElementById('fetch-like-for-tweet').addEventListener('click', e => {
+  document.getElementById('fetch-like-for-tweet').addEventListener('click', function(e)  {
     e.preventDefault();
     // const element = document.getElementById('fetch-like-for-tweet')
     const element = e.currentTarget
+    
     console.log(element.dataset.isLiked)
+    console.log(element.dataset.tweetId)
     
     let url = ""
 
     if ((element.dataset.isLiked) == 'true') {
-      url = '/tweets/{{tweet.pk}}/unlike/'
+      url = "{% url 'tweets:like' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
     }
     else {
-      url = '/tweets/{{tweet.pk}}/like/'
+      url = "{% url 'tweets:unlike' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
     }
 
     fetch(url, {
@@ -73,12 +75,12 @@
       const icon = document.getElementById('like-for-tweet-icon')
 
       if (element.dataset.isLiked == 'false') {
-        element.dataset.isLiked == 'true'
+        element.dataset.isLiked = 'true'
         icon.classList.remove('far')
         icon.classList.add('fas')
         icon.id = 'like-for-tweet-icon'
       } else {
-        element.dataset.isLiked == 'false'
+        element.dataset.isLiked = 'false'
         icon.classList.remove('fas')
         icon.classList.add('far')
         icon.id = 'like-for-tweet-icon'

@@ -59,12 +59,12 @@
       const icon = document.getElementById('like-for-tweet-icon')
 
       if (element.dataset.isLiked == 'false') {
-        element.dataset.isLiked == 'true'
+        element.dataset.isLiked = 'true'
         icon.classList.remove('far')
         icon.classList.add('fas')
         icon.id = 'like-for-tweet-icon'
       } else {
-        element.dataset.isLiked == 'false'
+        element.dataset.isLiked = 'false'
         icon.classList.remove('fas')
         icon.classList.add('far')
         icon.id = 'like-for-tweet-icon'
