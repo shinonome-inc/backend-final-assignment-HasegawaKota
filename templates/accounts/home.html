@@ -53,10 +53,10 @@
     let url = ""
 
     if ((element.dataset.isLiked) == 'true') {
-      url = "{% url 'tweets:like' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
+      url = "{% url 'tweets:unlike' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
     }
     else {
-      url = "{% url 'tweets:unlike' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
+      url = "{% url 'tweets:like' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
     }
 
     fetch(url, {
