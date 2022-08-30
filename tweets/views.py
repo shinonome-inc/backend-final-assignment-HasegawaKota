@@ -59,30 +59,31 @@ class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 @login_required
 def LikeView(request, pk, *args, **kwargs):
-    tweet_pk = request.POST.get('tweet_pk')
+    tweet_pk = request.POST.get("tweet_pk")
     tweet = get_object_or_404(Tweet, pk=tweet_pk)
-    Like.objects.get_or_create(user=request.user, tweet=tweet)
+    like, is_created = Like.objects.get_or_create(user=request.user, tweet=tweet)
     liked = True
+    like_for_tweet_count = tweet.like_set.count()
     context = {
-        "like_for_tweet_count": tweet.like_set.count(),
+        "like_for_tweet_count": like_for_tweet_count,
         "tweet_pk": tweet.pk,
-        "liked": liked
+        "liked": liked,
     }
     return JsonResponse(context)
 
 
 @login_required
 def UnlikeView(request, pk, *args, **kwargs):
-    tweet_pk = request.POST.get('tweet_pk')
+    tweet_pk = request.POST.get("tweet_pk")
     tweet = get_object_or_404(Tweet, pk=tweet_pk)
     like = Like.objects.filter(user=request.user, tweet=tweet)
     liked = False
     if like.exists():
         like.delete()
-        context = {
-            "like_for_tweet_count": tweet.like_set.count(),
-            "tweet_pk": tweet.pk,
-            "liked": liked
-        }
-
+    like_for_tweet_count = tweet.like_set.count()
+    context = {
+        "like_for_tweet_count": like_for_tweet_count,
+        "tweet_pk": tweet.pk,
+        "liked": liked,
+    }
     return JsonResponse(context)
