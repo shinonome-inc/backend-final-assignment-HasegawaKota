@@ -47,6 +47,8 @@
     // const element = document.getElementById('fetch-like-for-tweet')
     const element = e.currentTarget
     console.log(element.dataset.isLiked)
+    
+    let url = ""
 
     if ((element.dataset.isLiked) == 'true') {
       url = '/tweets/{{tweet.pk}}/unlike/'
