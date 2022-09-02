@@ -59,9 +59,9 @@ class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 @login_required
 def LikeView(request, pk, *args, **kwargs):
-    tweet_pk = request.POST.get("tweet_pk")
-    tweet = get_object_or_404(Tweet, pk=tweet_pk)
-    like, is_created = Like.objects.get_or_create(user=request.user, tweet=tweet)
+
+    tweet = get_object_or_404(Tweet, pk=pk)
+    Like.objects.get_or_create(user=request.user, tweet=tweet)
     liked = True
     like_for_tweet_count = tweet.like_set.count()
     context = {
@@ -74,8 +74,8 @@ def LikeView(request, pk, *args, **kwargs):
 
 @login_required
 def UnlikeView(request, pk, *args, **kwargs):
-    tweet_pk = request.POST.get("tweet_pk")
-    tweet = get_object_or_404(Tweet, pk=tweet_pk)
+
+    tweet = get_object_or_404(Tweet, pk=pk)
     like = Like.objects.filter(user=request.user, tweet=tweet)
     liked = False
     if like.exists():

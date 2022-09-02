@@ -117,22 +117,49 @@ class TestFavoriteView(TestCase):
         self.client.login(username="yamada", password="wasurenaide1108")
 
     def test_success_post(self):
-        pass
+        Tweet.objects.create(user=self.user_1, contents="ワンピース")
+        tweet = Tweet.objects.get(contents="ワンピース")
+        # ここはホームでいいね出来たら消す
+        self.client.post(reverse("tweets:detail", kwargs={"pk": tweet.pk}))
+        response = self.client.post(reverse("tweets:like", kwargs={"pk": tweet.pk}))
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(Like.objects.filter(tweet=tweet).exists())
 
     def test_failure_post_with_not_exist_tweet(self):
         # 存在しないツイートに対してリクエストを送信する
-        pass
-
-    def test_failure_post_with_favorited_tweet(self):
-        pass
+        Tweet.objects.create(user=self.user_1, contents="ワンピース")
+        tweet = Tweet.objects.get(contents="ワンピース")
+        # ここはホームでいいね出来たら消す
+        self.client.post(reverse("tweets:detail", kwargs={"pk": tweet.pk}))
+        response = self.client.post(reverse("tweets:like", kwargs={"pk": 999}))
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse(Like.objects.filter(tweet=tweet).exists())
 
 
 class TestUnfavoriteView(TestCase):
-    def test_success_post(self):
-        pass
+    def setUp(self):
+        self.user_1 = User.objects.create_user(
+            username="yamada", email="asaka@test.com", password="wasurenaide1108"
+        )
+        self.client.login(username="yamada", password="wasurenaide1108")
+        Tweet.objects.create(user=self.user_1, contents="ワンピース")
+        self.tweet = Tweet.objects.get(contents="ワンピース")
+        # ここはホームでいいね出来たら消す
+        self.client.post(reverse("tweets:detail", kwargs={"pk": self.tweet.pk}))
+        self.client.post(reverse("tweets:like", kwargs={"pk": self.tweet.pk}))
 
+    def test_success_post(self):
+        response = self.client.post(reverse("tweets:unlike", kwargs={"pk": self.tweet.pk}))
+        self.assertEquals(response.status_code, 200)
+        self.assertFalse(Like.objects.filter(tweet=self.tweet).exists())
+   
     def test_failure_post_with_not_exist_tweet(self):
-        pass
+        response = self.client.post(reverse("tweets:unlike", kwargs={"pk": 999}))
+        self.assertEquals(response.status_code, 404)
+        self.assertTrue(Like.objects.filter(tweet=self.tweet).exists())
 
     def test_failure_post_with_unfavorited_tweet(self):
-        pass
+        self.client.post(reverse("tweets:unlike", kwargs={"pk": self.tweet.pk}))
+        response = self.client.post(reverse("tweets:unlike", kwargs={"pk": self.tweet.pk}))
+        self.assertEquals(response.status_code, 200)
+        self.assertFalse(Like.objects.filter(tweet=self.tweet).exists())
