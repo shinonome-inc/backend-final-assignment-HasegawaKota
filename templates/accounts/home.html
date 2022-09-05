@@ -65,7 +65,7 @@
 
       let url = ""
       const element = e.currentTarget
-
+      console.log(element.dataset.isLiked)
       if ((element.dataset.isLiked) == 'true') {
         url = "{% url 'tweets:unlike' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
       }
@@ -90,13 +90,11 @@
 
         if (element.dataset.isLiked == 'false') {
           element.dataset.isLiked = 'true'
-          icon.classList.remove('far')
-          icon.classList.add('fas')
+          icon.innerHTML = "<i class='fas fa-heart text-danger'></i>"
           icon.id = ('like-for-tweet-icon-' + response.tweet_pk)
         } else {
           element.dataset.isLiked = 'false'
-          icon.classList.remove('fas')
-          icon.classList.add('far')
+          icon.innerHTML = "<i class='far fa-heart text-danger'></i>"
           icon.id = ('like-for-tweet-icon-' + response.tweet_pk)
         }
       }).catch(error => {
