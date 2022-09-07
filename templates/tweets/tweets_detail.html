@@ -34,7 +34,6 @@
 
     let url = ""
     const element = e.currentTarget
-    console.log(element.dataset.isLiked)
 
     if ((element.dataset.isLiked) == 'true') {
       url = '/tweets/{{tweet.pk}}/unlike/'

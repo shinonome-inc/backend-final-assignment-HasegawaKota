@@ -65,7 +65,6 @@
 
       let url = ""
       const element = e.currentTarget
-      console.log(element.dataset.isLiked)
       if ((element.dataset.isLiked) == 'true') {
         url = "{% url 'tweets:unlike' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
       }

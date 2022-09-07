@@ -22,3 +22,10 @@ class Like(models.Model):
     tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tweet", "user"], name="tweet_and_user_unique"
+            )
+        ]
