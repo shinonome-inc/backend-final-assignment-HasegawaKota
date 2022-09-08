@@ -36,10 +36,7 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
         context["liked_list"] = Like.objects.filter(user=user).values_list(
             "tweet", flat=True
         )
-        if self.object.like_set.filter(user=user).exists():
-            context["is_user_liked_for_tweet"] = True
-        else:
-            context["is_user_liked_for_tweet"] = False
+        context["is_user_liked_for_tweet"] = self.object.like_set.filter(user=user).exists()
         return context
 
 
