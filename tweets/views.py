@@ -80,4 +80,4 @@ def UnlikeView(request, pk, *args, **kwargs):
         }
         return JsonResponse(context)
     else:
-        return JsonResponse(404)
+        return JsonResponse(404, safe=False)
