@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}ホーム{% endblock %}
 {% block content %}
 
@@ -19,9 +19,88 @@
   {% else %}
   <a href="{% url 'accounts:user_profile' pk=user.profile.pk %}" class="btn btn-light">{{ tweet.user }}</a>
   {% endif %}
-
   <a href="{% url 'tweets:detail' tweet.pk %}" class="btn btn-light">{{tweet.contents}}</a>
+  <a>
+    {% if tweet.pk in liked_list %}
+    <button type="button" class="like_button" id="like-for-tweet-icon-{{tweet.pk}}" title="likedeleteボタン"
+      data-tweet-id="{{tweet.pk}}" data-is-liked="true">
+      <!-- すでにイイねしている時はfasクラス -->
+      <i class="fas fa-heart text-danger"></i>
+    </button>
+    {% else %}
+    <button type="button" class="like_button" id="like-for-tweet-icon-{{tweet.pk}}" title="likeボタン"
+      data-tweet-id="{{tweet.pk}}" data-is-liked="false">
+      <!-- イイねしていないときはfarクラス -->
+      <i class="far fa-heart text-danger"></i>
+    </button>
+    {% endif %}
+    <!-- イイねの数 -->
+    <span id="like-for-tweet-count-{{tweet.pk}}">{{ like_for_tweet_count }}</span>
+    <span>件のいいね</span>
+    </div>
+  </a>
 </ul>
 {% endfor %}
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+  const getCookie = name => {
+    if (document.cookie && document.cookie !== '') {
+      for (const cookie of document.cookie.split(';')) {
+        const [key, value] = cookie.trim().split('=');
+        if (key === name) {
+          return decodeURIComponent(value);
+        }
+      }
+    }
+  };
+
+  const csrftoken = getCookie('csrftoken');
+
+  const LikeButtons = document.getElementsByClassName('like_button');
+
+  for (const button of LikeButtons) {
+    button.addEventListener('click', function (e) {
+
+      let url = ""
+      const element = e.currentTarget
+      if ((element.dataset.isLiked) == 'true') {
+        url = "{% url 'tweets:unlike' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
+      }
+      else {
+        url = "{% url 'tweets:like' 0 %}".replace("0", this.getAttribute('data-tweet-id'))
+      }
+
+      fetch(url, {
+        method: 'POST',
+        body: `tweet_pk={{tweet.pk}}`,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          'X-CSRFToken': csrftoken,
+        },
+      }).then(response => {
+        return response.json();
+      }).then(response => {
+
+        const counter = document.getElementById('like-for-tweet-count-' + response.tweet_pk)
+        counter.textContent = response.like_for_tweet_count
+        const icon = document.getElementById('like-for-tweet-icon-' + response.tweet_pk)
+
+        if (element.dataset.isLiked == 'false') {
+          element.dataset.isLiked = 'true'
+          icon.innerHTML = "<i class='fas fa-heart text-danger'></i>"
+          icon.id = ('like-for-tweet-icon-' + response.tweet_pk)
+        } else {
+          element.dataset.isLiked = 'false'
+          icon.innerHTML = "<i class='far fa-heart text-danger'></i>"
+          icon.id = ('like-for-tweet-icon-' + response.tweet_pk)
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    });
+  }
+</script>
 
 {% endblock %}

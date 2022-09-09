@@ -16,7 +16,6 @@ class Migration(migrations.Migration):
             model_name="friendship",
             name="follower",
             field=models.ForeignKey(
-                null=True,
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="follower",
                 to=settings.AUTH_USER_MODEL,
@@ -26,7 +25,6 @@ class Migration(migrations.Migration):
             model_name="friendship",
             name="following",
             field=models.ForeignKey(
-                null=True,
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="following",
                 to=settings.AUTH_USER_MODEL,
