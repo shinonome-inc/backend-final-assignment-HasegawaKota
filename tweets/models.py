@@ -13,7 +13,7 @@ class Tweet(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return str(self.user)
+        return f"{self.contents} ({self.user.username})"
 
 
 class Like(models.Model):
