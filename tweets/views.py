@@ -1,11 +1,16 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, DetailView, DeleteView
-from django.http import Http404, JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+import os
 
-from .forms import TweetForm
+import openai
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import Http404, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.template import loader
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, View
+from dotenv import load_dotenv
+
+from .forms import ChatForm, TweetForm
 from .models import Like, Tweet
 
 # Create your views here.
@@ -36,7 +41,9 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
         context["liked_list"] = Like.objects.filter(user=user).values_list(
             "tweet", flat=True
         )
-        context["is_user_liked_for_tweet"] = self.object.like_set.filter(user=user).exists()
+        context["is_user_liked_for_tweet"] = self.object.like_set.filter(
+            user=user
+        ).exists()
         return context
 
 
@@ -81,4 +88,40 @@ def UnlikeView(request, pk, *args, **kwargs):
         return JsonResponse(context)
     else:
         return JsonResponse(404, safe=False)
-# aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
+class ChatView(View):
+    template_name = "tweets/chat.html"
+    load_dotenv()
+
+    def render_template(self, context):
+        template = loader.get_template(self.template_name)
+        return HttpResponse(template.render(context, self.request))
+
+    def get(self, request):
+        form = ChatForm()
+        context = {"form": form, "chat_results": ""}
+        return self.render_template(context)
+
+    def post(self, request):
+        form = ChatForm(request.POST)
+        if form.is_valid():
+            sentence = form.cleaned_data["sentence"]
+
+            # TODO: API\KEYを直接書きこむ事は絶対に避ける！！
+            openai.api_key = os.getenv("API_KEY")
+
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "日本語で応答してください"},
+                    {"role": "user", "content": sentence},
+                ],
+            )
+
+            chat_results = response["choices"][0]["message"]["content"]
+        else:
+            chat_results = ""
+
+        context = {"form": form, "chat_results": chat_results}
+        return self.render_template(context)

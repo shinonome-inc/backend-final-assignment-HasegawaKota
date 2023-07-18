@@ -6,12 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tweets', '0001_initial'),
+        ("tweets", "0001_initial"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='like',
-            constraint=models.UniqueConstraint(fields=('tweet', 'user'), name='tweet_and_user_unique'),
+            model_name="like",
+            constraint=models.UniqueConstraint(
+                fields=("tweet", "user"), name="tweet_and_user_unique"
+            ),
         ),
     ]
