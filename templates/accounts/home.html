@@ -10,7 +10,7 @@
   {% endfor %}
 </ul>
 {% endif %}
-
+<a href="{% url 'tweets:chat' %}" class="btn btn-light">chatgptを使ってみようぜ</a>
 {% for tweet in object_list %}
 <ul>
   {{tweet.created_at}}

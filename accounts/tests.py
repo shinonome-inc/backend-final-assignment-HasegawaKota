@@ -1,11 +1,12 @@
-from django.urls import reverse
-from django.test import TestCase
 from django.contrib.auth import SESSION_KEY
 from django.contrib.messages import get_messages
+from django.test import TestCase
+from django.urls import reverse
 
-from .models import User, Profile, FriendShip
-from tweets.models import Tweet
 from mysite import settings
+from tweets.models import Tweet
+
+from .models import FriendShip, Profile, User
 
 
 class SignUpTests(TestCase):
